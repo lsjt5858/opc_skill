@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wanwusheng AI Film Director"
+  short_description: "Script-to-assets-to-video prompt workflow"
+  default_prompt: "Use $wanwusheng-ai-film-director to turn this script and asset folder into a complete Wanwusheng AI-film production workflow."
