@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Loop Orchestrator"
+  short_description: "Design goal loops and verification workflows"
+  default_prompt: "Use $ai-loop-orchestrator to turn this objective into a bounded agent loop with verification and stop conditions."
