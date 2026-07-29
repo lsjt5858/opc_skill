@@ -1,0 +1,3 @@
+[submodule "skill/khazix-skills"]
+	path = skill/khazix-skills
+	url = git@github.com:KKKKhazix/khazix-skills.git
