@@ -12,6 +12,7 @@
 - `skill/hv-analysis`：横纵分析法深度研究与 PDF 报告生成。
 - `skill/khazix-writer`：数字生命卡兹克风格的公众号长文写作。
 - `skill/khazix-skills`：[Git Submodule] 卡兹克官方技能包（包含 aihot、hv-analysis、khazix-writer、leader、neat-freak、storage-analyzer 等），上游仓库：https://github.com/KKKKhazix/khazix-skills
+- `skill/seedance-2.0`：[Git Submodule] Seedance 2.0 视频生成技能，上游仓库：https://github.com/Emily2040/seedance-2.0
 
 ## Git Submodule 使用说明
 
@@ -29,9 +30,9 @@ git clone --recurse-submodules git@github.com:lsjt5858/opc_skill.git
 git submodule update --init --recursive
 ```
 
-### 更新 khazix-skills 子模块
+### 更新子模块
 
-当上游 [khazix-skills](https://github.com/KKKKhazix/khazix-skills) 有更新时，按以下步骤同步：
+当任一子模块上游有更新时（如 [khazix-skills](https://github.com/KKKKhazix/khazix-skills) 或 [seedance-2.0](https://github.com/Emily2040/seedance-2.0)），按以下步骤同步（以 khazix-skills 为例，替换为对应子模块路径即可）：
 
 ```bash
 # 1. 进入子模块目录，拉取最新代码
@@ -44,3 +45,5 @@ git add skill/khazix-skills
 git commit -m "chore: 更新 khazix-skills 到最新版本"
 git push
 ```
+
+更新 seedance-2.0 时，将路径替换为 `skill/seedance-2.0` 即可。
