@@ -1,0 +1,4 @@
+interface:
+  display_name: "万物生 AI 电影导演"
+  short_description: "将剧本拆成分镜、资产清单与万物生视频提示词完整流程"
+  default_prompt: "使用 $wanwusheng-ai-film-director，把这个剧本和素材文件夹转成完整的万物生 AI 电影制作流程。"
