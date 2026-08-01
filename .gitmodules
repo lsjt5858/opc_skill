@@ -4,3 +4,6 @@
 [submodule "skill/seedance-2.0"]
 	path = skill/seedance-2.0
 	url = git@github.com:Emily2040/seedance-2.0.git
+[submodule "skill/animated-voiceover"]
+	path = skill/animated-voiceover
+	url = git@github.com:s1dashu/animated-voiceover.git
