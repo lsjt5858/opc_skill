@@ -7,3 +7,6 @@
 [submodule "skill/animated-voiceover"]
 	path = skill/animated-voiceover
 	url = git@github.com:s1dashu/animated-voiceover.git
+[submodule "skill/xianxia-visual-director"]
+	path = skill/xianxia-visual-director
+	url = git@github.com:liyue-aigc/xianxia-visual-director.git
