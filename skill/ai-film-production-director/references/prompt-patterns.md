@@ -76,15 +76,15 @@
 - 纯白 studio 背景和受控中性光；
 - 双手空置，不持有相机、话筒、证件或其他职业道具；
 - 职业线索只能通过不含文字或 logo 的服装剪裁或外观表现；
-- 只有已锁定且身份识别必需的固定饰品可以保留；一般 `accessories` 不得生成随机配饰；
+- 任何已锁定且需保持连续性的固定饰品均可保留（如眼镜、婚戒），不以身份识别必需为前提；禁止随机配饰和未锁定职业道具；
 - 不要包含戏剧性剧情动作。
 
 ```text
-a production identity turnaround sheet for {character ID/name}. {reference-sheet ratio and grid}. same individual in every panel with identical facial structure, body proportions, hairstyle, costume, locked fixed identity accessories if any, and recognition marks. panels show front full body, true side full body, back full body, and right-front 3/4 full body; include a separate neutral face close-up if requested. neutral standing pose, arms relaxed and visible, empty hands, pure white seamless studio background, soft neutral reference lighting.
+a production identity turnaround sheet for {character ID/name}. {reference-sheet ratio and grid}. same individual in every panel with identical facial structure, body proportions, hairstyle, costume, locked fixed continuity accessories if any, and recognition marks. panels show front full body, true side full body, back full body, and right-front 3/4 full body; include a separate neutral face close-up if requested. neutral standing pose, arms relaxed and visible, empty hands, pure white seamless studio background, soft neutral reference lighting.
 
-Identity: {age, origin, build, face anchors, hair, skin}. Occupation cues: {logo-free, text-free garment cut or physical appearance only}. Mandatory recognition features: {features}. Costume/state: {wardrobe ID and exact materials/colors}. Fixed identity accessories: {only necessary locked items, or none}.
+Identity: {age, origin, build, face anchors, hair, skin}. Occupation cues: {logo-free, text-free garment cut or physical appearance only}. Mandatory recognition features: {features}. Costume/state: {wardrobe ID and exact materials/colors}. Fixed continuity accessories: {all locked items that must remain continuous, such as glasses or a wedding ring, or none}.
 
-Constraints: empty hands, no handheld props, no camera, no microphone, no badge or occupational equipment, no random or unlisted accessories, no sitting, no crying, no running, no cinematic scene, no pose change between orthographic views, no identity drift, no extra text, no logo, no watermark.
+Constraints: empty hands, no handheld props, no camera, no microphone, no badge or unlocked occupational props, no random or unlisted accessories, no sitting, no crying, no running, no cinematic scene, no pose change between orthographic views, no identity drift, no extra text, no logo, no watermark.
 ```
 
 ### 表情图
@@ -190,7 +190,7 @@ cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. P
 严格按当前镜头的实际生成模式二选一，不得仅因平台支持参考输入就把纯 T2V 镜头改写成 I2V/参考驱动镜头：
 
 - 当前镜头实际采用 I2V/参考驱动模式：再检查平台是否支持所需输入，只使用实际存在、适用于该镜头且已就绪的来源帧和资产引用。平台不支持所需输入时，不得保留伪引用或静默切换；只能先同步把 Production Spec 与镜头卡中的该镜生成模式改为纯 T2V、按纯 T2V 重写提示词并重新通过所有受影响的 Gate，再使用纯 T2V 模板，否则保持阻塞或更换为支持所需参考输入的平台。
-- 当前镜头实际采用纯 T2V：无论平台是否支持参考输入，都必须省略来源帧、结束帧、资产引用和 reference IDs，不得编造或暗示外部参考；在每个镜头提示词内完整重复文本连续性 DNA、开始状态和结束状态。
+- 当前镜头实际采用纯 T2V：无论平台是否支持参考输入，都必须省略来源帧、结束帧、资产引用和 reference IDs，不得编造或暗示外部参考；在每个镜头提示词内完整重复文本连续性 DNA 和开始状态，结束状态只在共同的 `End state` 段定义。使用完整提示词包时，`End state` 只映射到十栏目中的 `【尾帧】`，不得在文本连续性块重复定义。
 
 I2V / 参考驱动模式：
 
@@ -219,9 +219,9 @@ Constraints: no identity drift, no costume change, no prop morphing, no extra li
 
 按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。I2V/参考驱动镜头再按平台支持情况使用适用的 start/end frames，不得因为平台具备参考输入能力就改变纯 T2V 镜头的模式。
 
-独立提示词路径中，任何 I2V/参考驱动到纯 T2V 的模式切换都属于生产契约变更：必须同步更新 Production Spec 和对应镜头卡，重写该镜提示词，并重新通过所有受影响的 Gate。上述更新和复核完成前保持阻塞；无法完成时更换平台，不得只删除 reference wording 后继续生成。
+独立提示词路径中，任何 I2V/参考驱动到纯 T2V 的模式切换都属于生产契约变更：必须同步更新 Production Spec 和对应镜头卡，重写该镜提示词，并重跑所有受生成模式、拆镜、资产依赖或 keyframe 策略影响的 Gate。任一受影响 Gate 未通过时保持阻塞；无法完成时更换平台，不得只删除 reference wording 后继续生成。
 
-纯 T2V 遇到强状态变化、match cut、强 blocking 变化或身份敏感转折时，必须拆成多个独立镜头，不得把拆镜写成可选建议，也不得在单条提示词中跨越这些变化。拆分后的每个镜头都必须完整写明文本连续性 DNA、文本开始状态和文本结束状态；相邻镜头需要连续时，前一镜头的结束状态必须与后一镜头的开始状态明确对应。
+纯 T2V 遇到强状态变化、match cut、强 blocking 变化或身份敏感转折时，必须拆成多个独立镜头，不得把拆镜写成可选建议，也不得在单条提示词中跨越这些变化。拆分后的每个镜头都必须完整写明文本连续性 DNA 和文本开始状态，并仅在共同的 `End state` 段定义文本结束状态；相邻镜头需要连续时，前一镜头的结束状态必须与后一镜头的开始状态明确对应。
 
 ## 8. 色卡/风格 Bible
 
