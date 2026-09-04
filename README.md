@@ -4,7 +4,7 @@
 
 ## Skills
 
-- `skill/wanwusheng-ai-film-director`：万物生 AI 电影端到端导演技能。
+- `skill/ai-film-production-director`：AI 电影制片导演，面向跨平台电影制片与提示词包交付。
 - `skill/ai-loop-orchestrator`：有边界、可验证的 AI Agent 循环与工作流设计。
 - `skill/aigc-rapid-workflow-explainer`：AIGC 工具实测与工作流内容生产。
 - `skill/article-to-sop-manualizer`：将文章转化为零基础可执行 SOP。
