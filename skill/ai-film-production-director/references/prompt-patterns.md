@@ -70,15 +70,18 @@
 - 正面、真侧面、背面、3/4 全身视图；
 - 面部身份会影响近景连续性时，加入必要的面部 close-up 或识别细节 panel；
 - 每个 panel 中保持同一个人、同一比例、发型、服装和标记；
-- 纯 studio 背景和受控中性光；
+- 纯白 studio 背景和受控中性光；
+- 双手空置，不持有相机、话筒、证件或其他职业道具；
+- 职业线索只能通过不含文字或 logo 的服装剪裁或外观表现；
+- 只有已锁定且身份识别必需的固定饰品可以保留；一般 `accessories` 不得生成随机配饰；
 - 不要包含戏剧性剧情动作。
 
 ```text
-a production identity turnaround sheet for {character ID/name}. {reference-sheet ratio and grid}. same individual in every panel with identical facial structure, body proportions, hairstyle, costume, accessories, and recognition marks. panels show front full body, true side full body, back full body, and right-front 3/4 full body; include a separate neutral face close-up if requested. neutral standing pose, arms relaxed and visible, plain studio backdrop, soft neutral reference lighting.
+a production identity turnaround sheet for {character ID/name}. {reference-sheet ratio and grid}. same individual in every panel with identical facial structure, body proportions, hairstyle, costume, locked fixed identity accessories if any, and recognition marks. panels show front full body, true side full body, back full body, and right-front 3/4 full body; include a separate neutral face close-up if requested. neutral standing pose, arms relaxed and visible, empty hands, pure white seamless studio background, soft neutral reference lighting.
 
-Identity: {age, origin, build, face anchors, hair, skin, occupation cues}. Mandatory recognition features: {features}. Costume/state: {wardrobe ID and exact materials/colors}.
+Identity: {age, origin, build, face anchors, hair, skin}. Occupation cues: {logo-free, text-free garment cut or physical appearance only}. Mandatory recognition features: {features}. Costume/state: {wardrobe ID and exact materials/colors}. Fixed identity accessories: {only necessary locked items, or none}.
 
-Constraints: no sitting, no crying, no running, no cinematic scene, no pose change between orthographic views, no identity drift, no extra text, no watermark.
+Constraints: empty hands, no handheld props, no camera, no microphone, no badge or occupational equipment, no random or unlisted accessories, no sitting, no crying, no running, no cinematic scene, no pose change between orthographic views, no identity drift, no extra text, no logo, no watermark.
 ```
 
 ### 表情图
@@ -181,9 +184,25 @@ cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. P
 
 明确分开主体运动、摄影机运动、环境运动、时间和结束状态。
 
+先按平台能力和实际生成模式选择一个条件片段。I2V 或支持参考输入的模式才包含来源帧和实际存在的资产引用；纯 T2V 或不支持参考输入的模式必须省略不存在的来源帧、结束帧和 reference IDs，不得编造资产，并在提示词中完整重复文本连续性锚点。
+
+I2V / 支持参考输入：
+
 ```text
 cinematic {duration}s video shot for {shot ID}, {final aspect ratio}. Starting from {start-frame ID}; end on {end-frame ID if used}. Preserve exact character identity, wardrobe/state, prop marks/state, environment geometry, palette, and lighting direction from {reference IDs}.
+```
 
+纯 T2V / 不支持参考输入：
+
+```text
+cinematic {duration}s video shot for {shot ID}, {final aspect ratio}.
+Textual continuity DNA: character identity and recognition features: {complete textual anchors}; wardrobe/state: {complete textual anchors}; prop design/state: {complete textual anchors or none}; environment geometry: {complete textual anchors}; palette and lighting direction: {complete textual anchors}.
+Start state: {complete opening composition, positions, gaze, hand/prop state, action state, camera, environment, and lighting}.
+```
+
+随后追加共同的运动与结束状态片段：
+
+```text
 Subject motion: {one clear action sequence}.
 Camera motion: {dolly/pan/tilt/orbit/handheld/static}.
 Environment motion: {rain/dust/cloth/crowd/light}.
@@ -192,7 +211,7 @@ End state: {editable final state}.
 Constraints: no identity drift, no costume change, no prop morphing, no extra limbs, no camera teleport, no unrequested scene cut, no text, no logo.
 ```
 
-按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。对强状态变化或 blocking 变化使用 start/end frames。
+按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。对强状态变化或 blocking 变化，I2V 或支持参考输入时使用适用的 start/end frames；纯 T2V 或不支持参考输入时完整写明开始状态、结束状态和文本连续性 DNA。
 
 ## 8. 色卡/风格 Bible
 
