@@ -54,7 +54,7 @@ description: Use when 用户需要规划或审查 AI 电影制作，尤其涉及
 | 制片计划 | `references/production-workflow.md` | 场景/镜头规划、资产依赖、生成顺序、关口 |
 | 资产提示词 | `references/prompt-patterns.md` | 可复用角色、道具、环境、状态或镜头资产 |
 | 完整提示词包 | `references/video-prompt-pack-template.md`，必要时组合上述 references | 锁定值、资产表、镜头提示词、后期与 QC |
-| 审查/修补 | 按缺陷类型读取对应 reference | 保留正确内容，只修补真实问题 |
+| 提示词包修补 | 按缺陷类型读取对应 reference | 保留正确内容，只修补真实问题 |
 
 ## 统一生产链
 
