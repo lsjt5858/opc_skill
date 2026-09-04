@@ -10,8 +10,8 @@
 成片规格：{total_duration_if_known}，{aspect_ratio}，{visual_style}。
 平台单次生成范围：{clip_duration_range}。该范围只约束单条视频；不得据此推断成片总时长、固定镜头数或统一单镜时长。
 使用方式：先按 Production Spec 和镜头卡为每镜锁定一种生成模式，再只输出对应分支，禁止同时输出两种写法：
-- **I2V/参考驱动**：目标平台支持参考输入；资产锚定表和单镜提示词只列实际存在、平台支持且当前镜头需要的引用 token，不得为不需要或不可用的资产保留占位符。
-- **纯 T2V**：资产锚定表只可作为不传给模型的“设计台账”，不得包含或传入 token/UUID；单镜提示词删除全部资产引用行，改用完整文本写明连续性 DNA、开始状态和结束状态。
+- **I2V/参考驱动**：目标平台支持参考输入；每镜只传入实际存在、平台支持且当前镜头需要的资产子集，并只在单镜提示词中列出该子集的引用 token，不得把资产锚定表整表当作传入清单，也不得为不需要或不可用的资产保留占位符。
+- **纯 T2V**：不传入任何 token/UUID；单镜提示词删除全部资产引用行，改用完整文本写明连续性 DNA、开始状态和结束状态。
 
 若原定 I2V/参考驱动镜头遇到平台不支持参考输入，不得静默省略引用继续生成。只能二选一：先在 Production Spec 和镜头卡中显式将该镜生成模式改为纯 T2V、按纯 T2V 重写提示词并重新通过对应阶段 Gate；或保持阻塞并更换为支持参考输入的平台。
 
@@ -33,38 +33,27 @@
 
 AI 画面统一约束：no readable text, no numbers, no app interface, no subtitles, no logos, no watermark.
 
-## 1. 资产锚定表（按生成模式二选一）
+## 1. 资产锚定表（设计/追踪台账）
 
-### I2V/参考驱动资产锚定表
+本表用于包级资产设计、就绪状态和引用能力追踪，不等于任何单镜的传入清单。I2V/参考驱动镜头只能从中选择当前镜头实际需要、资产实际存在且平台支持的子集；纯 T2V 镜头不得从本表传入任何 token、UUID 或引用 ID。
 
-仅列实际存在、平台支持且当前镜头需要的 token；删除其余类别和占位行。
-
-【角色｜仅 I2V】
+【角色】
 - C01 {character}: `@[C01_TOKEN]`
   `{local path}`
 
-【场景｜仅 I2V】
+【场景】
 - E01 {environment}: `@[E01_TOKEN]`
   `{local path}`
 
-【道具｜仅 I2V】
+【道具】
 - P01 {prop}: `@[P01_TOKEN]`
   `{local path}`
 
-【色卡/关系参考｜仅 I2V】
+【色卡/关系参考】
 - S01 {reference}: `@[S01_TOKEN]`
   `{local path}`
 
-### 纯 T2V 资产设计台账
-
-本表仅供设计与连续性审阅，不传给模型；不得填写 token、UUID 或任何引用 ID。
-
-| 设计编号 | 类型 | 名称 | 完整文本连续性 DNA | 当前状态/用途 |
-|---|---|---|---|---|
-| C01 | 角色 | {character} | {identity, age, facial anchors, wardrobe and fixed identity details} | {current state/use} |
-| E01 | 场景 | {environment} | {layout, light direction, period details, materials and spatial mood} | {current state/use} |
-| P01 | 道具 | {prop} | {shape, material, wear, ownership and screen/readability rule} | {current state/use} |
-| S01 | 色卡/关系参考 | {reference} | {style, palette, texture, lighting and relationship constraints} | {current state/use} |
+每项同时记录其完整文本连续性 DNA、当前状态/用途、资产是否存在、目标平台是否支持及可用引用 ID；不存在、不支持或无 ID 时明确写“无/不适用”，不得伪造 token/UUID。
 
 ## 2. 镜头提示词
 ```
@@ -175,6 +164,7 @@ QC：{observable pass/fail checks with visible or audible evidence for identity,
 - 身份漂移（纯 T2V）：`preserve the exact same individual using the locked textual identity anchors: {complete facial structure, age, hair, skin, fixed accessories, wardrobe and distinguishing details}.`
 - 画幅漂移：`{aspect_ratio} final video frame, not {wrong_aspect_ratios}, no unintended crop or reframing.`
 - 文字漂移：`no readable text, no numbers, no app interface, no subtitles, no logos; all critical text will be composited in post.`
-- 道具漂移：`preserve the exact {prop} shape, material, scratches, worn edges, and current state from the prop reference.`
+- 道具漂移（I2V/参考驱动）：`preserve the exact {prop} shape, material, scratches, worn edges, and current state from the provided prop reference.`
+- 道具漂移（纯 T2V）：`preserve the exact {prop} using the locked textual anchors repeated in this shot: {shape, dimensions, material, color, scratches, worn edges, damage placement, owner and current state}.`
 - 表演过度：`follow the locked performance direction; remove unrequested exaggeration in voice, face, posture, and gesture.`
 - 类型错误：`preserve the locked rendering medium, genre, and visual style; exclude only the conflicting styles listed in the Production Spec.`
