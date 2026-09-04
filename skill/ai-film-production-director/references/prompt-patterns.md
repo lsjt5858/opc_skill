@@ -99,7 +99,7 @@ an expression reference sheet for the exact same {character ID/name} from the pr
 用于困难或重复动作，不要给每个小手势都做。
 
 ```text
-an action-pose reference sheet for the exact same {character ID/name} in {wardrobe ID}. panels show {distinct script actions with clear start/end body mechanics}. preserve identity, proportions, costume, dominant hand, carried props, and injury side. clean neutral background, readable full body and hands, practical anatomy. no environment storytelling, no costume change, no extra limbs.
+an action-pose reference sheet for the exact same {character ID/name} in {wardrobe ID}. panels show {distinct script actions with clear start/end body mechanics}. preserve identity, proportions, costume, dominant hand, carried props, and injury side. clean neutral background, readable full body and hands, anatomically coherent. no environment storytelling, no costume change, no extra limbs.
 ```
 
 ### 服装/状态图
@@ -131,7 +131,7 @@ an action-pose reference sheet for the exact same {character ID/name} in {wardro
 - 明确区别于故事里相似的物品。
 
 ```text
-a production prop reference sheet for {prop ID/name}. {layout}. same exact object in every panel. dimensions: {size}. owner and handling: {logic}. materials/colors: {locked values}. mandatory recognition marks: {exact locations}. state: {state ID}. show {views/details}. practical prop photography, neutral background, controlled light. not {confusable object}, no changed damage placement, no extra text, no watermark.
+a production prop reference sheet for {prop ID/name}. {layout}. same exact object in every panel. dimensions: {size}. owner and handling: {logic}. materials/colors: {locked values}. mandatory recognition marks: {exact locations}. state: {state ID}. show {views/details}. {rendering medium/style from Production Spec}, neutral background, controlled reference lighting, crisp readable views. not {confusable object}, no changed damage placement, no extra text, no watermark.
 ```
 
 对精确收据、信件、屏幕、标签或证据文字：生成不含关键字样的物理表面，再后期合成校对过的排版。提示词可以预留干净文字区域，但不能假装生成文字可靠。
@@ -150,7 +150,7 @@ a production prop reference sheet for {prop ID/name}. {layout}. same exact objec
 - 所有 panel 中保持同一布局。
 
 ```text
-a production environment reference sheet for {environment ID/name}, empty set with no story characters. {layout}: master wide, primary shooting direction, reverse direction, and key-zone detail/top-down relation. preserve identical architecture, door/window/furniture positions, materials, period details, and navigation paths in all panels. scale/function: {details}. lighting/weather state: {state ID and direction}. practical cinematic production design, spatially coherent, no unexplained layout changes, no readable incidental text, no watermark.
+a production environment reference sheet for {environment ID/name}, empty set with no story characters. {layout}: master wide, primary shooting direction, reverse direction, and key-zone detail/top-down relation. preserve identical architecture, door/window/furniture positions, materials, period details, and navigation paths in all panels. scale/function: {details}. lighting/weather state: {state ID and direction}. {rendering medium/style from Production Spec}, clear production reference detail, spatially coherent, no unexplained layout changes, no readable incidental text, no watermark.
 ```
 
 ## 6. Storyboard 与 Keyframe

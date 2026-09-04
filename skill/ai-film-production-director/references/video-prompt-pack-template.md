@@ -97,7 +97,7 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 环境音：{background room tone/environment sound or 无}；动作音：{time-coded action sounds or 无}；强调音：{time-coded emphasis sounds or 无}；对白/人声：{dialogue/voice treatment or 无}；音乐：{follow the locked Production Spec music policy or 无}。
 
 【影像调性】
-{palette, contrast, film stock/grain, physical light, skin/material texture, realism level and forbidden commercial/CG look}。
+{palette, contrast, medium, texture, lighting, subject/material treatment, rendering style, realism/stylization level and forbidden styles from the Production Spec}。
 
 【表演要求】
 {emotion expressed through breath, gaze, jaw, posture and small hand movement; explicit performance limits; who must not overact}。
