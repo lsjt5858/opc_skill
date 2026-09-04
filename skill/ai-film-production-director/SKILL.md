@@ -1,9 +1,9 @@
 ---
-name: wanwusheng-ai-film-director
-description: 面向 AI 电影的端到端导演 skill。用于剧本连续性审计、剧本转分镜、AI电影制作方案、资产拆解、角色/道具/场景提示词、storyboard、keyframes、image-to-video 镜头、完整 video prompt pack、提示词包优化与审查。
+name: ai-film-production-director
+description: Use when 用户需要规划或审查 AI 电影制作，尤其涉及剧本可生产性、跨镜头连续性、资产依赖、关键帧或可执行视频提示词包。
 ---
 
-# AI 电影导演
+# AI 电影制片导演
 
 ## 目的
 

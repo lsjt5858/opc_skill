@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI 电影制片导演"
+  short_description: "将剧本、素材与制作约束转成可执行的制片方案和视频提示词包"
+  default_prompt: "使用 $ai-film-production-director，把这个剧本和素材目录转成可执行的 AI 电影制片方案与视频提示词包。"
