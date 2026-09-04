@@ -53,8 +53,9 @@
 | 声音变量 | 强调音 |  |  |  |
 | 声音变量 | 音乐策略 |  |  |  |
 | 声音变量 | 响度与混音要求 |  |  |  |
-| 生成变量 | 工具/模型 |  |  |  |
-| 生成变量 | 每镜生成模式（I2V/参考驱动或纯 T2V） |  |  |  |
+| 生成变量 | 工具/模型与平台能力 |  |  |  |
+| 生成变量 | 允许的生成模式 |  |  |  |
+| 生成变量 | 默认生成模式策略 |  |  |  |
 | 生成变量 | 输入类型 |  |  |  |
 | 生成变量 | 参考素材限制 |  |  |  |
 | 生成变量 | 片段能力 |  |  |  |
@@ -98,23 +99,38 @@ Subject motion:
 Camera motion:
 Environment motion:
 Canonical tail state / 权威尾帧定义:
-  Character positions:
-  Eyelines:
+  Camera/composition:
+    Shot size:
+    Camera position/angle:
+    Frame layout:
+  Character terminal state:
+    Position:
+    Pose:
+    Facing:
+    Expression:
+    Hands:
+    Action completion:
+  Environment terminal state:
+    Motion:
+    Weather:
+    Particles:
+    Lighting:
   Prop holder/state/direction:
-  Lighting state/direction:
-  Framing:
-  Camera position/angle:
-  Frame layout:
+  Eyelines:
   Next-shot edit handoff:
 Dialogue/voice-over:
 Sound cue:
-Reference assets:
+Dependency asset IDs:
 Input handles:
 Continuity notes:
 Transition in/out:
 ```
 
-镜头卡必须在进入 Gate 3 前锁定 `Canonical tail state / 权威尾帧定义`。它完整记录人物位置、视线、道具持有者/状态/方向、光线状态/方向、景别、机位/角度、画面布局和下一镜剪辑接口，是该镜头结束状态的唯一真源。最终视频提示词十栏目中的 `【尾帧】` 必须逐项忠实映射该值，不得删改或另创。I2V/参考驱动镜头的 `Input handles` 使用 `{input_handle}`，可映射为 token、附件、URL 或 API 字段；token 仅为示例形式，正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。I2V 可以使用结束帧，但结束帧资产必须从镜头卡的 canonical tail state 派生并逐项一致，不得另写第二套结束状态；无法保证一致时，只允许起始帧输入或阻塞修正。纯 T2V 镜头的 `Reference assets` 与 `Input handles` 必须填写 `无/不适用`，生成时不得传入来源帧、资产引用或输入句柄；连续性由文本连续性 DNA 和开始状态承载，十栏目 `【尾帧】` 同样映射镜头卡 canonical tail state，但不需要结束帧资产。这里的“无输入引用”只限制传给模型的引用输入，不限制在文字中描述 Production Spec 已锁定的角色、服装、道具和场景事实。
+Production Spec 的生成变量只记录平台/模型能力、允许的生成模式和默认生成模式策略，不记录或锁定任何单镜实际模式。每镜实际 `Generation mode` 的唯一真源是镜头卡；所有下游只读取镜头卡。模式变更时先更新镜头卡并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；只有变更同时改变全局默认生成模式策略时，才同步 Production Spec。
+
+镜头卡必须在进入 Gate 3 前锁定 `Canonical tail state / 权威尾帧定义`。它以 `Camera/composition` 统一记录景别、机位/角度和画面布局；以 `Character terminal state` 记录每个角色的位置、姿态、朝向、表情、手部和动作完成状态；以 `Environment terminal state` 记录环境运动、天气、粒子和光线终态；并保留道具持有者/状态/方向、视线和下一镜剪辑接口。它是该镜头结束状态的唯一真源。最终视频提示词十栏目中的 `【尾帧】` 必须逐项忠实映射该值，不得删改、重复定义或另创。
+
+`Dependency asset IDs` 是模式无关的规划依赖：无论 I2V/参考驱动还是纯 T2V，都记录该镜头依赖的角色、服装/状态、道具、环境或风格资产 ID。`Input handles` 只记录实际传给模型的输入及平台字段映射。I2V/参考驱动镜头必须让两者逐项一致映射，每个依赖资产 ID 都有且只有一个实际可用的 `{input_handle}`，反向也不得出现无依赖资产 ID 的输入；结束帧输入必须从 canonical tail state 派生并逐项一致，无法保证时只允许起始帧输入或阻塞修正。纯 T2V 镜头保留 `Dependency asset IDs`，将 `Input handles` 填写 `无/不适用`，生成时不得传入来源帧、输入句柄或结束帧资产；连续性由这些依赖资产的文本连续性 DNA 和开始状态承载，十栏目 `【尾帧】` 同样映射镜头卡 canonical tail state。
 
 当一个镜头包含多个独立动作、地点跳转、身份敏感变化，或视频模型难以保持的摄影机运动时，拆分镜头。
 
@@ -215,15 +231,15 @@ Animatic 用于验证叙事和覆盖，不要求最终脸部或材质。
 
 先按当前镜头实际生成模式互斥判断来源帧要求，平台能力只在镜头已选择 I2V/参考驱动模式后判断：
 
-- 当前镜头为 I2V/参考驱动模式时，平台必须支持参考输入，并使用适用的 `{input_handle}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。可以使用结束帧，但它必须从镜头卡 canonical tail state 派生，逐项复现人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口；无法保证一致时，只允许起始帧输入或阻塞修正，不得创建第二套结束状态；
-- 当前镜头为纯 T2V 时，无论平台是否具备参考输入能力，都不得传入来源帧、资产引用或输入句柄；镜头卡 `Reference assets` 与 `Input handles` 写 `无/不适用`。对上述复杂变化拆分镜头，并用文本锁定每镜的连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state，但不创建或传入结束帧资产；仍须在文字中描述已锁定的角色、服装、道具和场景事实，不得把“没有输入引用”误解为省略这些连续性事实。
+- 当前镜头为 I2V/参考驱动模式时，平台必须支持参考输入，且镜头卡 `Dependency asset IDs` 与 `Input handles` 必须逐项一致映射；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。可以使用结束帧，但它必须从镜头卡 canonical tail state 派生，逐项复现其全部结构化字段；无法保证一致时，只允许起始帧输入或阻塞修正，不得创建第二套结束状态；
+- 当前镜头为纯 T2V 时，无论平台是否具备参考输入能力，都不得传入来源帧、输入句柄或结束帧资产；镜头卡保留 `Dependency asset IDs`，仅将 `Input handles` 写 `无/不适用`。对上述复杂变化拆分镜头，并用依赖资产的文本连续性 DNA 和开始状态锁定连续性，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state；不得把“没有模型输入”误解为没有规划依赖或省略已锁定事实。
 
-若原定 I2V/参考驱动镜头的平台不支持参考输入，不得静默删除来源帧或引用后继续生成。只能先更新 Production Spec 与镜头卡，将该镜生成模式显式改为纯 T2V，并补齐文本连续性 DNA 和开始状态，同时保持 canonical tail state 不变并忠实映射到十栏目 `【尾帧】`；随后重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate，不固定为 Gate 0/1/4。任一受影响 Gate 未通过则阻塞；否则更换为支持参考输入的平台。
+若原定 I2V/参考驱动镜头的平台不支持参考输入，不得静默删除输入后继续生成。只能先更新镜头卡，将该镜 `Generation mode` 显式改为纯 T2V，保留 `Dependency asset IDs`、清空 `Input handles`，并补齐文本连续性 DNA 和开始状态，同时保持 canonical tail state 不变并忠实映射到十栏目 `【尾帧】`；随后重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate，不固定为 Gate 0/1/4。只有这次变更同时改变全局默认生成模式策略时，才同步 Production Spec。任一受影响 Gate 未通过则阻塞；否则更换为支持参考输入的平台。
 
 视频提示词必须始终分开描述：
 
 - I2V/参考驱动镜头：确认平台支持参考输入，并使用适用且与 `【本镜输入】` 一致的 `{input_handle}`；
-- 纯 T2V 镜头：不传入来源帧、资产引用、输入句柄或结束帧资产，以完整的文本连续性 DNA 和开始状态承载已锁定事实，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state；
+- 纯 T2V 镜头：保留 `Dependency asset IDs`，不传入来源帧、输入句柄或结束帧资产，以完整的文本连续性 DNA 和开始状态承载已锁定事实，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state；
 - 主体运动；
 - 摄影机运动；
 - 环境运动；
@@ -249,27 +265,27 @@ Animatic 用于验证叙事和覆盖，不要求最终脸部或材质。
 ### Gate 0 — Production Spec and continuity
 
 - **进入条件**：已收到用户指令、源材料、已检查素材或平台约束中的至少一种，并建立七组 Production Spec。
-- **退出条件**：所有影响下一个适用阶段的值均为已锁定或有依据的推断；待确认项已被阻塞或明确可延后；只对当前交付物涉及的时间线、年龄、身份、地点、道具状态、关键文字和可生产性完成审计，整体准入结论为通过或有条件通过。
+- **退出条件**：所有影响下一个适用阶段的值均为已锁定或有依据的推断；待确认项已被阻塞或明确可延后；Production Spec 的生成变量只包含平台/模型能力、允许模式和默认策略，不包含任何单镜实际模式；只对当前交付物涉及的时间线、年龄、身份、地点、道具状态、关键文字和可生产性完成审计，整体准入结论为通过或有条件通过。
 
 ### Gate 1 — Scene list, shot cards, animatic
 
 - **进入条件**：Gate 0 退出条件已满足；项目存在场景/镜头拆解、叙事、对白容量、跨镜覆盖或节奏验证依赖。
-- **退出条件**：场景列表覆盖全部适用故事节拍；每个剪辑单位都有镜头卡及开始状态，并已锁定完整的 `Canonical tail state / 权威尾帧定义`，包含人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口；需要 Animatic 时，其无最终画面也能读懂故事，且时长、台词容量、动作覆盖、声音提示和转场接口均经检查；不需要时明确记录 `Animatic：不适用` 及依据。没有上述依赖的任务可将 Gate 1 整体标记为 `不适用`。
+- **退出条件**：场景列表覆盖全部适用故事节拍；每个剪辑单位都有镜头卡，且镜头卡是每镜实际 `Generation mode` 的唯一真源，并分别记录模式无关的 `Dependency asset IDs` 与模型 `Input handles`；开始状态已定义；完整的 `Canonical tail state / 权威尾帧定义` 已锁定，包含结构化 `Camera/composition`、`Character terminal state`、`Environment terminal state`、道具持有/状态/方向、视线和下一镜剪辑接口；需要 Animatic 时，其无最终画面也能读懂故事，且时长、台词容量、动作覆盖、声音提示和转场接口均经检查；不需要时明确记录 `Animatic：不适用` 及依据。没有上述依赖的任务可将 Gate 1 整体标记为 `不适用`。
 
 ### Gate 2 — reusable assets
 
 - **进入条件**：Gate 1 已通过或明确标记为 `不适用`；当前交付物需要可复用资产，并已有资产清单和依赖顺序。
-- **退出条件**：当前交付物所需的角色身份/转面、服装与状态、核心道具、空环境或空间布局资产已生成并通过一致性检查；每项资产有稳定标识、来源和可引用版本。不需要可复用资产时，Gate 2 可标记为 `不适用`。
+- **退出条件**：当前交付物所需的角色身份/转面、服装与状态、核心道具、空环境或空间布局资产已生成并通过一致性检查；每项资产有稳定标识、来源和可引用版本；每张镜头卡的 `Dependency asset IDs` 均按规划依赖记录，不因纯 T2V 无模型输入而删除。不需要可复用资产时，Gate 2 可标记为 `不适用`。
 
 ### Gate 3 — storyboard/keyframes
 
 - **进入条件**：前一个适用 Gate 已通过，跳过的 Gate 已明确标记为 `不适用`；当前交付物需要 storyboard 或 keyframe，且其所依赖的身份、状态、道具和环境参考均可引用；镜头卡 canonical tail state 已在 Gate 3 前锁定。
-- **退出条件**：storyboard 或 keyframe 覆盖当前交付物所需镜头并符合交付比例；存在相邻镜头时，其站位、视线、屏幕方向、手/道具状态、光线、构图变化及开始/结束状态可连续；I2V 使用结束 keyframe/结束帧资产时，Gate 3 必须确认它从镜头卡 canonical tail state 派生，并在人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口上逐项一致。任何不一致均阻塞修正或退回仅起始帧输入；依赖未定义空间关系的最终 keyframe 不得通过。不需要 storyboard 或 keyframe 时，Gate 3 可标记为 `不适用`。
+- **退出条件**：storyboard 或 keyframe 覆盖当前交付物所需镜头并符合交付比例；存在相邻镜头时，其站位、视线、屏幕方向、手/道具状态、光线、构图变化及开始/结束状态可连续；I2V 使用结束 keyframe/结束帧资产时，Gate 3 必须确认它从镜头卡 canonical tail state 派生，并与结构化 `Camera/composition`、`Character terminal state`、`Environment terminal state`、道具持有/状态/方向、视线和下一镜剪辑接口逐项一致。任何不一致均阻塞修正或退回仅起始帧输入；依赖未定义空间关系的最终 keyframe 不得通过。不需要 storyboard 或 keyframe 时，Gate 3 可标记为 `不适用`。
 
 ### Gate 4 — video generation
 
-- **进入条件**：前一个适用 Gate 已通过，跳过的 Gate 已明确标记为 `不适用`；当前交付物需要视频生成，且每镜已锁定运动描述、时间节拍、镜头卡 canonical tail state 和负面运动约束；Gate 4 必须先确认最终提示词十栏目 `【尾帧】` 忠实映射该 canonical tail state。输入要求先按当前镜头实际生成模式互斥判断：I2V/参考驱动镜头必须确认平台支持参考输入并锁定适用且与 `【本镜输入】` 一致的 `{input_handle}`；其中结束帧必须已在 Gate 3 证明从镜头卡 canonical tail state 派生，否则只允许起始帧输入或阻塞修正。纯 T2V 镜头必须将镜头卡 `Reference assets` 与 `Input handles` 标为 `无/不适用`，且生成时不传入来源帧、资产引用、输入句柄或结束帧资产，并完整锁定文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state。纯 T2V 的无引用输入不影响在文字中描述已锁定的角色、服装、道具和场景事实。
-- **退出条件**：所有计划片段均已生成并逐镜质检；运动和物理可信，身份与状态不漂移，无非预期文字或伪影；Gate 4 必须确认每个生成结果落在镜头卡 canonical tail state，人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口逐项一致，需要衔接时该状态可接入下一镜；失败片段已有返修或替代决定，不得以提示词 `【尾帧】`、输入结束帧或生成结果另立结束状态。不需要视频生成时，Gate 4 可标记为 `不适用`。
+- **进入条件**：前一个适用 Gate 已通过，跳过的 Gate 已明确标记为 `不适用`；当前交付物需要视频生成，且每镜已在镜头卡锁定实际 `Generation mode`、运动描述、时间节拍、canonical tail state 和负面运动约束；下游不得从 Production Spec 推导或覆盖每镜模式。Gate 4 必须先确认最终提示词十栏目 `【尾帧】` 忠实映射该 canonical tail state。I2V/参考驱动镜头必须确认平台支持参考输入，且 `Dependency asset IDs` 与 `Input handles` 逐项一致映射；其中结束帧必须已在 Gate 3 证明从镜头卡 canonical tail state 派生，否则只允许起始帧输入或阻塞修正。纯 T2V 镜头必须保留 `Dependency asset IDs`、将 `Input handles` 标为 `无/不适用`，且生成时不传入来源帧、输入句柄或结束帧资产，并完整锁定依赖资产的文本连续性 DNA 和开始状态。
+- **退出条件**：所有计划片段均已生成并逐镜质检；运动和物理可信，身份与状态不漂移，无非预期文字或伪影；Gate 4 必须确认每个生成结果与镜头卡 canonical tail state 的结构化 `Camera/composition`、`Character terminal state`、`Environment terminal state`、道具持有/状态/方向、视线和下一镜剪辑接口逐项一致，需要衔接时该状态可接入下一镜；失败片段已有返修或替代决定，不得以提示词 `【尾帧】`、输入结束帧或生成结果另立结束状态。不需要视频生成时，Gate 4 可标记为 `不适用`。
 
 ### Gate 5 — edit/sound/text/delivery
 
