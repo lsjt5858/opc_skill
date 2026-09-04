@@ -5,7 +5,8 @@
 - Workspace：`/Users/bytedance/zimeiti/opc_skill/.worktrees/ai-film-production-director`
 - Branch：`feature/ai-film-production-director`
 - Full GREEN tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
-- Targeted review-fix regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
+- Targeted repair regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
+- Targeted identity-inference regression commit：`f9293e6`（完整 SHA：`f9293e68e871cc6ac45252c351fe29388821d38b`）
 - Runner：最终 GREEN 回归 Agent
 - Skill 入口：`skill/ai-film-production-director/SKILL.md`
 - 已按路由加载：
@@ -14,7 +15,7 @@
   - `skill/ai-film-production-director/references/production-workflow.md`
   - `skill/ai-film-production-director/references/prompt-patterns.md`
   - `skill/ai-film-production-director/references/video-prompt-pack-template.md`
-- 执行方法：完整 GREEN Agent 在 `5c4b5b7` 上读取入口、全部五份 references 与 `agents/openai.yaml` 后逐条执行；审查修正影响的最小资产与最小修补场景随后在 `5d325b6` 上定向重跑。响应均为对应固定提交上的实际规则应用结果，不沿用未复核结论。
+- 执行方法：完整 GREEN Agent 在 `5c4b5b7` 上读取入口、全部五份 references 与 `agents/openai.yaml` 后逐条执行；最小修补场景随后在 `5d325b6` 上定向重跑，最小身份资产场景在 `f9293e6` 上再次定向重跑。响应均为对应固定提交上的实际规则应用结果，不沿用未复核结论。
 - 证据性质：人工场景执行与 shell 静态检查，不声称存在自动化测试框架，也未调用或伪造 Skill 专用 CLI。
 
 ## 2. 四个原始请求
@@ -29,38 +30,68 @@
 
 仅输出所请求的中性角色身份参考图提示词，不展开制片计划、镜头或视频提示词。
 
-=== 角色身份参考图提示词 - C01 女记者 v1 ===
+=== 图像生成提示词 - C01 中性角色身份参考图 v1 ===
 
-【用途与依赖】
-- 仅用于锁定一名 30 岁女记者的中性角色身份。
-- 无其他项目依赖。
+【范围】
+- `[已锁定]` 仅生成一个角色身份参考图资产。
+- `[已锁定]` 不扩展其他项目需求。
 
-【格式】
-- **推断：16:9 横向参考图、2×2 四宫格布局**。依据：需同时容纳四个清晰的全身转面视图；该比例不是项目成片画幅。
+【角色变量】
+- 身份：`[已锁定]` 记者；`[待确认]` 姓名、国籍、族裔、地域背景、肤色。
+- 年龄：`[已锁定]` 30岁。
+- 性别：`[已锁定]` 女性。
+- 体型：`[待确认占位符：身高、骨架、体态、身材比例]`。
+- 面部：`[待确认占位符：脸型、五官、识别锚点、皮肤细节]`。
+- 发型：`[待确认占位符：长度、造型、颜色、分缝]`。
+- 妆容与仪容：`[待确认占位符：妆容、眉形、指甲等]`。
+- 服装：`[待确认占位符：具体款式、材质、颜色]`；`[推断：服装不得出现文字或 logo，理由是避免随机品牌并仅保留职业线索]`。
+- 鞋履：`[待确认占位符：款式、材质、颜色]`。
+- 饰品：`[待确认]`；`[推断：确认前不呈现任何饰品，理由是防止生成未锁定的连续性特征]`。
 
-【prompt】
+【参考图格式】
+- `[已锁定]` 单张角色身份参考图。
+- `[已锁定]` 正面、真侧面、背面、3/4全身视图。
+- `[已锁定]` 中性站姿、中性表情。
+- `[已锁定]` 纯白背景。
+- `[已锁定]` 双手空置。
+- `[待确认]` 画幅比例、网格行列、3/4视图朝向。
+- `[推断]` 各视图采用独立等尺寸 panel，理由是避免人物重叠并便于连续性比对。
+- `[推断]` 使用柔和中性棚拍光，理由是身份转面图需要准确呈现外观而不加入剧情化光效。
+- `[推断]` 所有 panel 保持同一人物、比例和外观，理由是该资产用于锁定角色身份。
+
+【Prompt】
 
 ```text
-A production identity turnaround sheet for C01, a 30-year-old female journalist. 16:9 landscape reference sheet in a clean 2x2 grid. The same individual appears in every panel with identical facial structure, body proportions, hairstyle, clothing, and recognition features.
+A production identity turnaround sheet for one character only.
 
-Panels show:
-1. front full-body view,
-2. true side full-body view,
-3. back full-body view,
-4. right-front 3/4 full-body view.
+[LOCKED] Subject: a 30-year-old female journalist.
+[PENDING] Name, nationality, ethnicity, regional background, and skin tone.
+[PENDING] Build: {height, frame, posture, body proportions}.
+[PENDING] Face: {face shape, facial features, skin details, mandatory recognition anchors}.
+[PENDING] Hair: {length, style, color, parting}.
+[PENDING] Grooming: {makeup, eyebrows, nails, other grooming details}.
+[PENDING] Clothing: {exact garments, materials, colors}.
+[INFERRED — rationale: preserve occupational readability without inventing brands] Any selected clothing must be text-free and logo-free.
+[PENDING] Shoes: {exact style, material, color}.
+[INFERRED — rationale: no continuity accessory was supplied] No accessories until explicitly locked.
 
-Neutral standing pose, neutral expression, arms relaxed and fully visible, empty hands. Pure white seamless studio background, soft controlled neutral lighting, even exposure, clear production-reference detail.
+[LOCKED] Show front full-body, true side full-body, back full-body, and one 3/4 full-body view.
+[PENDING] Three-quarter view orientation: {left-front or right-front}.
+[LOCKED] Neutral standing pose and neutral facial expression.
+[LOCKED] Empty hands.
+[LOCKED] Pure white background.
+[INFERRED — rationale: enable reliable identity comparison] Separate equal-size panels, same individual in every panel, identical facial structure, body proportions, hairstyle, grooming, clothing, shoes, and recognition marks.
+[INFERRED — rationale: avoid dramatic styling in an identity reference] Soft neutral studio reference lighting.
 
-Identity: 30-year-old woman, natural professional appearance, average build, restrained grooming. Occupation cues appear only through a practical, logo-free and text-free tailored jacket, plain shirt, straight-leg trousers, and practical shoes. Fixed continuity accessories: none.
-
-Constraints: empty hands, no handheld props, no camera, no microphone, no recorder, no notebook, no press badge, no lanyard, no occupational equipment, no random accessories, no readable text, no logo, no watermark, no sitting, no dramatic action, no cinematic environment, no identity drift, no hairstyle or wardrobe changes between panels, no pose changes between orthographic views.
+Constraints: one character only, empty hands, no handheld props, no camera, no microphone, no badge, no occupational equipment, no random accessories, no text, no logo, no watermark, no dramatic action, no cinematic environment, no sitting, no identity drift, no pose change between orthographic views.
 ```
 
 【QC】
-- 四个 panel 必须是同一人。
-- 必须包含正面、真侧面、背面和右前 3/4 全身视图。
-- 纯白背景、中性站姿、中性表情、双手空置。
-- 不得出现相机、话筒、记者证、文字、logo 或水印。
+- 四个全身视图齐全：正面、真侧面、背面、3/4。
+- 同一人物、同一服装与同一身体比例。
+- 白色背景，中性站姿与表情，双手空置。
+- 不擅自补全任何 `[待确认]` 外观字段。
+- 无相机、话筒、证件、饰品、文字、logo 或水印。
 
 ### 2.2 信息不足的完整提示词包
 
@@ -572,7 +603,7 @@ Gate 0 的平台事实由本次输入锁定为“不支持任何参考输入”�
 
 ## 6. 静态检查命令与真实结果
 
-所有命令均在固定 workspace、branch 和 `HEAD=5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841` 上实际执行。没有专用测试 CLI；以下均为通用 shell、Ruby YAML 解析和 Git 检查。
+第 6.1-6.10 节命令在固定 workspace、branch 和 `HEAD=5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841` 上执行；第 6.11 节命令在审查修正后的实现提交 `f9293e68e871cc6ac45252c351fe29388821d38b` 上执行。没有专用测试 CLI；以下均为通用 shell、Ruby YAML 解析和 Git 检查。
 
 ### 6.1 YAML
 
@@ -720,18 +751,29 @@ diff_check_exit=0
 
 ### 6.11 审查修正后的实现检查
 
-在 `5d325b65358fef88ac492690d2b0580c873c75b0` 上重新解析 YAML，检查路径和旧标识、修补权威来源规则、身份资产四视图要求、十栏目顺序，并执行：
+在 `f9293e68e871cc6ac45252c351fe29388821d38b` 上执行：
 
 ```bash
-git diff --check 40aab9c..5d325b6
+set -e
+skill=skill/ai-film-production-director
+ruby -e 'require "yaml"; d=YAML.safe_load(File.read(ARGV.fetch(0)), permitted_classes: [], aliases: false); i=d["interface"]; abort unless d.is_a?(Hash) && i.is_a?(Hash) && %w[display_name short_description default_prompt].all? { |k| i[k].is_a?(String) && !i[k].empty? }; puts "yaml=PASS"' "$skill/agents/openai.yaml"
+test -f "$skill/SKILL.md" && test ! -e skill/quan_zhan_dao_yan && test ! -e "$skill/.DS_Store"; printf 'paths=PASS\n'
+rg -q '修补缺失字段时必须读取其权威来源' "$skill/SKILL.md" && rg -q '不得用泛化占位内容冒充已完成修补' "$skill/SKILL.md"; printf 'repair_source=PASS\n'
+for term in '已锁定 / 推断 / 待确认' '不得只标注画幅' '一旦创建中性身份/转面图，无论角色是否只出现一次' 中性站姿 正面 真侧面 背面 '3/4 全身视图' '纯白 studio 背景' 双手空置; do rg -q "$term" "$skill/references/prompt-patterns.md"; done; printf 'identity_contract=PASS\n'
+f="$skill/references/video-prompt-pack-template.md"; prev=100; for heading in 场景 运镜 动作 尾帧 音效 影像调性 表演要求 对白 反向锚定 '后期与 QC'; do line=$(awk -v start=100 -v pattern="【${heading}】" 'NR >= start && index($0, pattern) == 1 { print NR; exit }' "$f"); test -n "$line" && test "$line" -gt "$prev"; prev=$line; done; printf 'ten_columns=PASS last_heading_line=%s\n' "$prev"
+git diff --check 40aab9c..f9293e6; printf 'diff_check=PASS\nimplementation_head=%s\n' "$(git rev-parse HEAD)"
 ```
 
 真实结果：exit `0`。
 
 ```text
-implementation_head=5d325b65358fef88ac492690d2b0580c873c75b0
-review_fix_static_checks=PASS
-ten_column_last_heading_line=146
+yaml=PASS
+paths=PASS
+repair_source=PASS
+identity_contract=PASS
+ten_columns=PASS last_heading_line=146
+diff_check=PASS
+implementation_head=f9293e68e871cc6ac45252c351fe29388821d38b
 ```
 
 ## 7. 观察结果与证据索引
@@ -753,7 +795,7 @@ ten_column_last_heading_line=146
 - 本文所有观察结果均链接到本文件的具体响应或命令章节。
 - 行为验证如实描述为当前 Agent 逐条应用 Skill 的人工场景回归；没有声称自动化测试框架。
 - 静态检查只记录实际运行的通用 shell、Ruby YAML 解析与 Git 命令；没有声称或伪造专用 CLI。
-- 四个原始中文请求均逐字保留；完整 GREEN 在 `5c4b5b7` 执行，受审查修正影响的最小资产与最小修补场景在 `5d325b6` 重新生成和逐项复核。
+- 四个原始中文请求均逐字保留；完整 GREEN 在 `5c4b5b7` 执行，最小修补场景在 `5d325b6` 重跑，最小身份资产场景在 `f9293e6` 再次重跑。
 - 四题材和两个平台输入均独立重跑；平台矩阵保持同一剧情和统一 Gate。
 - 新增四个定向场景均记录本次实际规则应用响应；N22/N24 只证明规则被正确触发，不把缺失的图片、视频、镜头卡或资产产物伪报为 Gate 通过证据。
-- 完整 GREEN 的 tested commit 固定为 `5c4b5b7`；审查修正后的定向回归固定为 `5d325b6`。证据文档提交不会伪称与被测实现提交为同一 `HEAD`。
+- 完整 GREEN 的 tested commit 固定为 `5c4b5b7`；最小修补定向回归固定为 `5d325b6`；身份推断定向回归固定为 `f9293e6`。证据文档提交不会伪称与被测实现提交为同一 `HEAD`。

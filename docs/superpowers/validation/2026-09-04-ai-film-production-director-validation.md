@@ -1,10 +1,11 @@
 # AI Film Production Director 验证摘要
 
 - 基线 commit：`40aab9c`
-- 实现范围：`40aab9c..5d325b6`
+- 实现范围：`40aab9c..f9293e6`
 - Full GREEN tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
-- Targeted review-fix regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
-- 运行方式：完整 GREEN 回归在 `5c4b5b7` 上执行；审查修正影响的最小资产和最小修补场景在 `5d325b6` 上定向重跑。以下仅为摘要；完整输入、实际响应、命令和真实结果见 [GREEN 原始证据](./2026-09-04-ai-film-production-director-green-evidence.md)。
+- Targeted repair regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
+- Targeted identity-inference regression commit：`f9293e6`（完整 SHA：`f9293e68e871cc6ac45252c351fe29388821d38b`）
+- 运行方式：完整 GREEN 回归在 `5c4b5b7` 上执行；最小修补场景在 `5d325b6` 上定向重跑；最小身份资产场景在 `f9293e6` 上再次定向重跑。以下仅为摘要；完整输入、实际响应、命令和真实结果见 [GREEN 原始证据](./2026-09-04-ai-film-production-director-green-evidence.md)。
 
 ## 四个原始请求
 
@@ -32,8 +33,8 @@
 
 ## 静态检查
 
-- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；动态画幅正向命中为 9 行，反向固定画幅命中为 0。审查修正后的实现检查也在 `5d325b6` 上通过。命令、退出码和 stdout 见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
-- `git diff --check 40aab9c..5d325b6`：exit `0`，原始结果见证据 [6.11](./2026-09-04-ai-film-production-director-green-evidence.md#611-审查修正后的实现检查)。
+- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；动态画幅正向命中为 9 行，反向固定画幅命中为 0。审查修正后的实现检查也在 `f9293e6` 上通过，且记录了完整命令和 stdout，见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
+- `git diff --check 40aab9c..f9293e6`：exit `0`，原始结果见证据 [6.11](./2026-09-04-ai-film-production-director-green-evidence.md#611-审查修正后的实现检查)。
 
 ## 合理裁量
 
