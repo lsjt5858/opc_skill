@@ -285,8 +285,10 @@ Skill 修改采用 RED、GREEN、REFACTOR：
 3. 更新 `agents/openai.yaml` 的展示名和默认调用名。
 4. 增强五个 reference 的对应职责，删除重复和平台专属默认值。
 5. 删除 skill 目录内无业务用途的 `.DS_Store`。
+6. 更新 `README.md` 中因目录重命名而失效的 Skill 索引。
+7. 在 `docs/superpowers/validation/` 增加本次实施的验证摘要和原始证据。
 
-不修改工作区中的其他 skill，也不处理未跟踪的 `剧本/` 目录。
+除上述迁移索引和验证证据外，不修改工作区中的其他 skill，也不处理未跟踪的 `剧本/` 目录。
 
 ## 14. 验收标准
 

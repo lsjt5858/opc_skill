@@ -1,9 +1,10 @@
 # AI Film Production Director 验证摘要
 
 - 基线 commit：`40aab9c`
-- Feature range：`40aab9c..5c4b5b7`
-- Tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
-- 运行方式：最终 GREEN 回归 Agent 在固定 commit 上完整读取当前 Skill、全部 references 与 YAML 后逐条应用。以下仅为摘要；完整输入、实际响应、命令和真实结果见 [GREEN 原始证据](./2026-09-04-ai-film-production-director-green-evidence.md)。
+- 实现范围：`40aab9c..5d325b6`
+- Full GREEN tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
+- Targeted review-fix regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
+- 运行方式：完整 GREEN 回归在 `5c4b5b7` 上执行；审查修正影响的最小资产和最小修补场景在 `5d325b6` 上定向重跑。以下仅为摘要；完整输入、实际响应、命令和真实结果见 [GREEN 原始证据](./2026-09-04-ai-film-production-director-green-evidence.md)。
 
 ## 四个原始请求
 
@@ -15,7 +16,7 @@
 ## RED / GREEN
 
 - RED observed：旧目录名与 Skill ID 不一致；单资产请求包含多项未标注的身份与服装选择；信息不足的完整包违反旧规则，固定为 17 秒、3 个镜头，并将推断和未标注选择传播到最终镜头。年龄/道具冲突阻塞与最小修补场景在旧版已通过，不作为 RED 缺口。
-- GREEN observed：单资产请求走最小路由；缺失变量进入已锁定/推断/待确认/可延后状态；年龄和怀表冲突阻塞受影响提示词并给出最小解决方案；N01 保留、N02 补尾帧、N03 因 C09 不存在而单独阻塞。对应完整输出见原始证据 [2.1-2.4](./2026-09-04-ai-film-production-director-green-evidence.md#2-四个原始请求)。
+- GREEN observed：单资产请求走最小路由并显式标注参考图格式推断；缺失变量进入已锁定/推断/待确认/可延后状态；年龄和怀表冲突阻塞受影响提示词并给出最小解决方案；N01 保留，N02 因缺少 canonical tail state 而局部阻塞且不编造尾帧，N03 因 C09 不存在而单独阻塞。对应完整输出见原始证据 [2.1-2.4](./2026-09-04-ai-film-production-director-green-evidence.md#2-四个原始请求)。
 
 ## 跨题材与跨平台
 
@@ -31,12 +32,16 @@
 
 ## 静态检查
 
-- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；动态画幅正向命中为 9 行，反向固定画幅命中为 0。命令、退出码和 stdout 见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
-- `git diff --check 40aab9c..5c4b5b7`：exit `0`，原始结果见证据 [6.10](./2026-09-04-ai-film-production-director-green-evidence.md#610-固定-feature-range-diff)。
+- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；动态画幅正向命中为 9 行，反向固定画幅命中为 0。审查修正后的实现检查也在 `5d325b6` 上通过。命令、退出码和 stdout 见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
+- `git diff --check 40aab9c..5d325b6`：exit `0`，原始结果见证据 [6.11](./2026-09-04-ai-film-production-director-green-evidence.md#611-审查修正后的实现检查)。
 
 ## 合理裁量
 
 以下三项不作为缺口：最小请求附带必要的生成约束但不展开完整流程；信息不足时给出带状态的可选锁定值而非逐项停问；不存在的 C09 只报告阻塞并请求有效资产，不虚构替代 ID。
+
+## 变更范围
+
+产品规则变更仅位于重命名后的 Skill 目录。`README.md` 只同步失效的 Skill 路径；两份 validation 文档只保存本次验证证据。未修改其他 Skill 或 `剧本/`。
 
 ## 自审
 

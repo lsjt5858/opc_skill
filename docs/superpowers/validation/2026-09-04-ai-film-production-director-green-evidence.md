@@ -4,7 +4,8 @@
 
 - Workspace：`/Users/bytedance/zimeiti/opc_skill/.worktrees/ai-film-production-director`
 - Branch：`feature/ai-film-production-director`
-- Tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
+- Full GREEN tested commit：`5c4b5b7`（完整 SHA：`5c4b5b7b2a4749eb9f85f5933fa96b6f171b7841`）
+- Targeted review-fix regression commit：`5d325b6`（完整 SHA：`5d325b65358fef88ac492690d2b0580c873c75b0`）
 - Runner：最终 GREEN 回归 Agent
 - Skill 入口：`skill/ai-film-production-director/SKILL.md`
 - 已按路由加载：
@@ -13,7 +14,7 @@
   - `skill/ai-film-production-director/references/production-workflow.md`
   - `skill/ai-film-production-director/references/prompt-patterns.md`
   - `skill/ai-film-production-director/references/video-prompt-pack-template.md`
-- 执行方法：当前 Agent 在 tested commit 上完整读取入口、全部五份 references 与 `agents/openai.yaml` 后，将下列每条输入彼此独立地重新应用当前 Skill；响应均为本次回归实际生成的完整响应或按要求保留的 Production Spec/结构摘要，不沿用未复核结论。
+- 执行方法：完整 GREEN Agent 在 `5c4b5b7` 上读取入口、全部五份 references 与 `agents/openai.yaml` 后逐条执行；审查修正影响的最小资产与最小修补场景随后在 `5d325b6` 上定向重跑。响应均为对应固定提交上的实际规则应用结果，不沿用未复核结论。
 - 证据性质：人工场景执行与 shell 静态检查，不声称存在自动化测试框架，也未调用或伪造 Skill 专用 CLI。
 
 ## 2. 四个原始请求
@@ -28,34 +29,38 @@
 
 仅输出所请求的中性角色身份参考图提示词，不展开制片计划、镜头或视频提示词。
 
-=== image prompt - C01-ID01 30岁女记者中性身份参考 v1 ===
+=== 角色身份参考图提示词 - C01 女记者 v1 ===
 
 【用途与依赖】
-- 锁定角色身份；没有其他项目依赖。
+- 仅用于锁定一名 30 岁女记者的中性角色身份。
+- 无其他项目依赖。
 
 【格式】
-- 4:3 横向角色转面参考图，五个等宽 panel：正面全身、真侧面全身、背面全身、右前 3/4 全身、正面面部近景。
-
-【连续性】
-- 已锁定：女性、30岁、记者职业身份。
-- 推断：当代日常职业装、自然妆发、无剧情状态；依据是“中性角色身份参考图”，可由用户覆盖。
+- **推断：16:9 横向参考图、2×2 四宫格布局**。依据：需同时容纳四个清晰的全身转面视图；该比例不是项目成片画幅。
 
 【prompt】
 
 ```text
-a production identity turnaround sheet for C01, a 30-year-old female journalist. 4:3 horizontal reference-sheet grid with five equal panels. the exact same individual in every panel with identical facial structure, body proportions, hairstyle, costume, and recognition features. panels show front full body, true side full body, back full body, right-front 3/4 full body, and a separate neutral front face close-up. neutral standing pose, arms relaxed with both hands visible, calm neutral expression, natural contemporary grooming, practical understated journalist workwear with no logos, plain pure white studio background, soft neutral reference lighting, even exposure, clear production-reference detail.
+A production identity turnaround sheet for C01, a 30-year-old female journalist. 16:9 landscape reference sheet in a clean 2x2 grid. The same individual appears in every panel with identical facial structure, body proportions, hairstyle, clothing, and recognition features.
 
-Constraints: no camera, no microphone, no notebook, no press badge, no bag, no handheld props, no sitting, no crying, no running, no cinematic location, no dramatic action, no pose change between orthographic views, no identity drift, no extra person, no text, no logo, no watermark.
+Panels show:
+1. front full-body view,
+2. true side full-body view,
+3. back full-body view,
+4. right-front 3/4 full-body view.
+
+Neutral standing pose, neutral expression, arms relaxed and fully visible, empty hands. Pure white seamless studio background, soft controlled neutral lighting, even exposure, clear production-reference detail.
+
+Identity: 30-year-old woman, natural professional appearance, average build, restrained grooming. Occupation cues appear only through a practical, logo-free and text-free tailored jacket, plain shirt, straight-leg trousers, and practical shoes. Fixed continuity accessories: none.
+
+Constraints: empty hands, no handheld props, no camera, no microphone, no recorder, no notebook, no press badge, no lanyard, no occupational equipment, no random accessories, no readable text, no logo, no watermark, no sitting, no dramatic action, no cinematic environment, no identity drift, no hairstyle or wardrobe changes between panels, no pose changes between orthographic views.
 ```
 
 【QC】
-- 五个 panel 必须是同一人，年龄观感约 30 岁，脸型、五官比例、发型、身材和服装一致。
-- 正面、真侧面、背面、3/4 与面部近景齐全；站姿和表情中性。
-- 纯白背景、受控中性光、双手可见；画面中没有职业道具、剧情动作、文字、logo 或水印。
-
-【跑歪修复】
-- 身份漂移 -> `preserve the exact same individual and identical facial anchors in all five panels.`
-- 混入剧情或道具 -> `strict neutral production reference only, empty hands, pure white studio background, no story action and no props.`
+- 四个 panel 必须是同一人。
+- 必须包含正面、真侧面、背面和右前 3/4 全身视图。
+- 纯白背景、中性站姿、中性表情、双手空置。
+- 不得出现相机、话筒、记者证、文字、logo 或水印。
 
 ### 2.2 信息不足的完整提示词包
 
@@ -167,33 +172,50 @@ Audit scope: N01-N03 最小修补
 
 Overall conclusion: 阻塞
 
-Conditions / blocking summary: N02 可做局部结构补丁；N03 的 C09 不存在，修复前不得进入生成。
+Conditions / blocking summary: N02 缺少镜头卡权威尾帧定义；N03 引用了不存在的 C09。两项解决前不得交付对应最终提示词。
 
-- `N01`：保持原文，不重写、不重排。
-- `N02`：只在原块中补入以下独立栏目，其余内容保持原文：
+**N01**
 
-```text
-【尾帧】
-保持 N02 最后一段动作结束时的既有人物位置、视线、道具持有者与状态、环境布局和光线方向；动作完全停住并稳定保持 0.5 秒，作为下一镜剪辑接口。不得新增动作、人物、道具转移或光线变化。
-```
+- 保持原文不变。
+- 不输出替换文本，不做任何重写。
 
-- `N03`：不改写其余栏目，暂时阻塞。删除或替换 `C09` 前不能把该镜提交生成。
+**N02**
 
-ID: ASSET-01
+ID: CONT-01
 
 Severity: Blocker
 
-Source facts: N03 引用了不存在的 `C09`。
+Source facts: N02 缺少尾帧；其正文或镜头卡中不存在 `Canonical tail state / 权威尾帧定义`。
 
-Downstream impact: N03 的角色身份/状态无法追踪，生成会产生未受控身份。
+Downstream impact: 无法合法补写 N02 的 `【尾帧】`、结束帧资产或精确 QC 条件。
 
-Recommended lock: 若该人物已有正确资产，提供其真实稳定 ID 并仅替换 `C09`；若资产缺失，先创建并验收该角色资产，再恢复引用。
+Recommended lock: 由 N02 镜头卡提供唯一的 canonical tail state。
 
-Recommended action: 提供有效资产 ID 或补齐资产。
+Recommended action: 补充 `Camera/composition`、`Character terminal state`、`Environment terminal state`、道具持有者/状态/方向、视线和下一镜剪辑接口。
 
 Status: 待确认
 
-最小变更结果：N01 零改动；N02 仅新增 `【尾帧】`；N03 仅隔离无效引用并等待有效 ID，不虚构替代资产。
+修补结果：**N02 保持阻塞，不生成或猜测任何尾帧内容。**
+
+**N03**
+
+ID: CONT-02
+
+Severity: Blocker
+
+Source facts: N03 引用资产 C09，但现有资产表中不存在 C09。
+
+Downstream impact: N03 的依赖关系和输入映射无效，不能进入生成。
+
+Recommended lock: 提供实际存在且适用于 N03 的资产 ID，或先创建并确认 C09；若该依赖并非镜头所需，则确认后从镜头卡依赖中删除。
+
+Recommended action: 补充有效资产及其就绪状态；I2V/参考驱动模式还需提供可用输入句柄。
+
+Status: 待确认
+
+修补结果：**N03 保持阻塞，不伪造 C09、替代资产或输入句柄。**
+
+仍可继续部分：保留 N01 原文，并登记 N02、N03 的阻塞项；不重写其他正确内容。
 
 ## 3. 跨题材实际执行
 
@@ -696,26 +718,42 @@ git diff --check 40aab9c..5c4b5b7; rc=$?; printf 'diff_check_exit=%s\n' "$rc"; e
 diff_check_exit=0
 ```
 
+### 6.11 审查修正后的实现检查
+
+在 `5d325b65358fef88ac492690d2b0580c873c75b0` 上重新解析 YAML，检查路径和旧标识、修补权威来源规则、身份资产四视图要求、十栏目顺序，并执行：
+
+```bash
+git diff --check 40aab9c..5d325b6
+```
+
+真实结果：exit `0`。
+
+```text
+implementation_head=5d325b65358fef88ac492690d2b0580c873c75b0
+review_fix_static_checks=PASS
+ten_column_last_heading_line=146
+```
+
 ## 7. 观察结果与证据索引
 
 - 最小模式未扩写为完整制片流程，见 [2.1](#21-最小资产请求)。
 - 缺失阻塞变量没有被静默猜测，关键文字进入后期，见 [2.2](#22-信息不足的完整提示词包)。
 - 年龄算术和怀表持有链分别形成 Blocker，见 [2.3](#23-连续性冲突阻塞)。
-- N01 保留，N02 局部补尾帧，N03 因无效资产隔离，见 [2.4](#24-最小修补)。
+- N01 保留；N02 因缺少 canonical tail state 被局部阻塞且未编造尾帧；N03 因无效资产隔离，见 [2.4](#24-最小修补)。
 - 四种题材均保留用户给定媒介、画幅和时长，见 [第 3 节](#3-跨题材实际执行)。
 - Platform A/B 只改变拆分和参考策略，核心故事、资产状态、生产链和 Gate 不变，见 [第 4 节](#4-精确跨平台矩阵实际执行)。
 - 纯 T2V 的依赖、输入和连续性载体均符合契约，见 [5.1](#51-纯-t2v-保留依赖但不传模型输入)。
 - I2V 结束帧规则正确要求先锁定 canonical tail state，再由其生成结束帧；因无实际图片或视频，Gate 3 待验证/阻塞，Gate 4 未进入，见 [5.2](#52-i2v-结束帧从-canonical-tail-state-派生)。
 - 人物位置相同但姿态、手部和环境运动漂移仍被判为阻塞，见 [5.3](#53-尾帧姿态与运动漂移冲突)。
 - 平台不支持 I2V 输入时，规则正确触发显式模式变更并要求重跑 Gate 1-4；因相关产物未提供，这些 Gate 仍待验证/阻塞，见 [5.4](#54-i2v-平台能力不足时显式改模式)。
-- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V、canonical tail 和固定 feature range diff 的命令结果见 [第 6 节](#6-静态检查命令与真实结果)。
+- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V、canonical tail、固定 feature range diff 和审查修正后的实现检查结果见 [第 6 节](#6-静态检查命令与真实结果)。
 
 ## 8. 自审
 
 - 本文所有观察结果均链接到本文件的具体响应或命令章节。
 - 行为验证如实描述为当前 Agent 逐条应用 Skill 的人工场景回归；没有声称自动化测试框架。
 - 静态检查只记录实际运行的通用 shell、Ruby YAML 解析与 Git 命令；没有声称或伪造专用 CLI。
-- 四个原始中文请求均逐字保留，其响应已在本次回归中重新生成和逐项复核。
+- 四个原始中文请求均逐字保留；完整 GREEN 在 `5c4b5b7` 执行，受审查修正影响的最小资产与最小修补场景在 `5d325b6` 重新生成和逐项复核。
 - 四题材和两个平台输入均独立重跑；平台矩阵保持同一剧情和统一 Gate。
 - 新增四个定向场景均记录本次实际规则应用响应；N22/N24 只证明规则被正确触发，不把缺失的图片、视频、镜头卡或资产产物伪报为 Gate 通过证据。
-- Tested commit、完整 SHA 与 `HEAD` 一致；静态 feature range 严格使用用户指定的 `40aab9c..5c4b5b7`。
+- 完整 GREEN 的 tested commit 固定为 `5c4b5b7`；审查修正后的定向回归固定为 `5d325b6`。证据文档提交不会伪称与被测实现提交为同一 `HEAD`。

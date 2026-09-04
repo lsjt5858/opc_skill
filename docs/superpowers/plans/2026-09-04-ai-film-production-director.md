@@ -22,6 +22,9 @@
 - Modify: `skill/ai-film-production-director/references/prompt-patterns.md`
 - Modify: `skill/ai-film-production-director/references/video-prompt-pack-template.md`
 - Modify: `skill/ai-film-production-director/references/output-batching.md`
+- Modify: `README.md` only to replace the stale renamed-skill index entry
+- Add: `docs/superpowers/validation/2026-09-04-ai-film-production-director-validation.md`
+- Add: `docs/superpowers/validation/2026-09-04-ai-film-production-director-green-evidence.md`
 - Delete: `skill/ai-film-production-director/.DS_Store`
 - Preserve: `剧本/` and every unrelated skill directory
 
@@ -457,7 +460,7 @@ Use the exact prompts from Task 1 with the revised skill. Confirm:
 Minimal request -> only the requested identity asset
 Missing variables -> explicit variable states before final prompts
 Continuity conflict -> affected downstream work blocked
-Repair -> N01 preserved; only N02 and N03 repaired
+Repair -> N01 preserved; only N02 and N03 addressed, and any field lacking its authoritative source remains locally blocked rather than fabricated
 ```
 
 - [ ] **Step 2: Run cross-genre regression**
