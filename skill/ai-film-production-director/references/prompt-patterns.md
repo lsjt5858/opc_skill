@@ -64,11 +64,11 @@
 
 用于锁定角色是谁。
 
-必备：
+按角色复用频率、辨识难度和连续性风险决定覆盖深度，不要不加判断地强制每个一次性角色制作全套转面。需要完整身份资产时，必备：
 
 - 中性站姿和中性表情；
 - 正面、真侧面、背面、3/4 全身视图；
-- 布局允许时加入面部 close-up 或识别细节 panel；
+- 面部身份会影响近景连续性时，加入必要的面部 close-up 或识别细节 panel；
 - 每个 panel 中保持同一个人、同一比例、发型、服装和标记；
 - 纯 studio 背景和受控中性光；
 - 不要包含戏剧性剧情动作。
@@ -86,7 +86,7 @@ Constraints: no sitting, no crying, no running, no cinematic scene, no pose chan
 只在身份锁定后使用。
 
 - 固定头部角度，或受控的正面/3/4 组合；
-- 4-6 个与剧本节拍绑定的命名情绪；
+- 只覆盖与剧本节拍绑定的必要命名情绪；
 - 保持同一发型、服装领口、光线和脸部比例；
 - 避免与故事无关的泛泛情绪九宫格。
 
@@ -126,7 +126,7 @@ an action-pose reference sheet for the exact same {character ID/name} in {wardro
 
 - 精确尺寸和归属/拿取逻辑；
 - 正面/侧面/顶面/3/4 或相关正交视图；
-- 固定材质、扣件、磨损、污渍、刻字、可动部件；
+- 固定材质、扣件、磨损、污渍、刻字、可动部件和稳定识别标记；
 - 打开、损坏、潮湿、包裹或破损时，要做独立状态变体；
 - 明确区别于故事里相似的物品。
 
@@ -138,13 +138,13 @@ a production prop reference sheet for {prop ID/name}. {layout}. same exact objec
 
 ## 5. 环境图
 
-重复地点要先创建空场景，再创建带人物的剧情帧。
+重复地点要先创建不含故事人物的空环境，再创建带人物的剧情帧。
 
 必备：
 
 - 尺寸与功能；
-- 主视角大远景和主要/反向覆盖；
-- 几何关系重要时提供俯视/空间关系；
+- 主视角大远景和反向覆盖；
+- 仅在走位、视线或剪辑依赖几何关系时，提供必要的俯视图或空间关系图；
 - 入口、出口、窗、门、家具、危险点、核心道具区域；
 - 材质、年代、老化程度、天气和光线方向；
 - 所有 panel 中保持同一布局。
@@ -161,13 +161,13 @@ a production environment reference sheet for {environment ID/name}, empty set wi
 
 ### 关键帧静帧（Keyframe Still）
 
-参考图锁定后，用于最终镜头瞬间。
+用于最终镜头瞬间。仅当该关键帧实际引用的角色身份、服装/状态、道具和环境资产全部就绪后生成；镜头不涉及的资产类型可以省略引用，不得用未就绪占位资产绕过依赖。
 
 必备：
 
 - 镜头 ID 和故事作用；
 - 最终交付比例；
-- 身份、服装/状态、道具和环境的参考 ID；
+- 该镜头适用且已就绪的身份、服装/状态、道具和环境参考 ID；
 - 摄影机/镜头感觉、角度、距离、景别、景深；
 - 演员 blocking、视线、动作状态和画面位置；
 - 环境、天气和明确光线方向；
@@ -179,7 +179,7 @@ cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. P
 
 ## 7. Image-to-Video / Text-to-Video 镜头
 
-明确分开运动维度。
+明确分开主体运动、摄影机运动、环境运动、时间和结束状态。
 
 ```text
 cinematic {duration}s video shot for {shot ID}, {final aspect ratio}. Starting from {start-frame ID}; end on {end-frame ID if used}. Preserve exact character identity, wardrobe/state, prop marks/state, environment geometry, palette, and lighting direction from {reference IDs}.
@@ -192,7 +192,7 @@ End state: {editable final state}.
 Constraints: no identity drift, no costume change, no prop morphing, no extra limbs, no camera teleport, no unrequested scene cut, no text, no logo.
 ```
 
-优先 3-6 秒。拆分多节拍动作。对强状态变化或 blocking 变化使用 start/end frames。
+按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。对强状态变化或 blocking 变化使用 start/end frames。
 
 ## 8. 色卡/风格 Bible
 
