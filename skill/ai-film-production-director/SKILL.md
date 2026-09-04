@@ -56,6 +56,8 @@ description: Use when 用户需要规划或审查 AI 电影制作，尤其涉及
 | 完整提示词包 | `references/video-prompt-pack-template.md`，必要时组合上述 references | 锁定值、资产表、镜头提示词、后期与 QC |
 | 提示词包修补 | 按缺陷类型读取对应 reference | 保留正确内容，只修补真实问题 |
 
+修补缺失字段时必须读取其权威来源。若缺少镜头卡 `Canonical tail state / 权威尾帧定义`、有效资产或其他必要事实，只隔离并阻塞受影响字段，列出最少补充信息；不得用泛化占位内容冒充已完成修补。
+
 ## 统一生产链
 
 输入与变量锁定 → 可生产性与连续性审计 → 场景表和镜头卡 → 资产依赖与生成顺序 → Storyboard / Keyframe → 视频提示词包 → 后期交接与 QC。
