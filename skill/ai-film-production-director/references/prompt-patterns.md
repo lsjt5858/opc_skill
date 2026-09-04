@@ -184,15 +184,18 @@ cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. P
 
 明确分开主体运动、摄影机运动、环境运动、时间和结束状态。
 
-先按平台能力和实际生成模式选择一个条件片段。I2V 或支持参考输入的模式才包含来源帧和实际存在的资产引用；纯 T2V 或不支持参考输入的模式必须省略不存在的来源帧、结束帧和 reference IDs，不得编造资产，并在提示词中完整重复文本连续性锚点。
+严格按当前镜头的实际生成模式二选一，不得仅因平台支持参考输入就把纯 T2V 镜头改写成 I2V/参考驱动镜头：
 
-I2V / 支持参考输入：
+- 当前镜头实际采用 I2V/参考驱动模式：再检查平台是否支持所需输入，只使用实际存在、适用于该镜头且已就绪的来源帧和资产引用。平台不支持所需输入时，不得保留伪引用；应先明确把该镜头改为纯 T2V，再使用纯 T2V 模板。
+- 当前镜头实际采用纯 T2V：无论平台是否支持参考输入，都必须省略来源帧、结束帧、资产引用和 reference IDs，不得编造或暗示外部参考；在每个镜头提示词内完整重复文本连续性 DNA、开始状态和结束状态。
+
+I2V / 参考驱动模式：
 
 ```text
 cinematic {duration}s video shot for {shot ID}, {final aspect ratio}. Starting from {start-frame ID}; end on {end-frame ID if used}. Preserve exact character identity, wardrobe/state, prop marks/state, environment geometry, palette, and lighting direction from {reference IDs}.
 ```
 
-纯 T2V / 不支持参考输入：
+纯 T2V：
 
 ```text
 cinematic {duration}s video shot for {shot ID}, {final aspect ratio}.
@@ -211,7 +214,9 @@ End state: {editable final state}.
 Constraints: no identity drift, no costume change, no prop morphing, no extra limbs, no camera teleport, no unrequested scene cut, no text, no logo.
 ```
 
-按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。对强状态变化或 blocking 变化，I2V 或支持参考输入时使用适用的 start/end frames；纯 T2V 或不支持参考输入时完整写明开始状态、结束状态和文本连续性 DNA。
+按平台单次生成能力和镜头动作密度确定时长；超出单次可靠能力时拆分多节拍动作。I2V/参考驱动镜头再按平台支持情况使用适用的 start/end frames，不得因为平台具备参考输入能力就改变纯 T2V 镜头的模式。
+
+纯 T2V 遇到强状态变化、match cut、强 blocking 变化或身份敏感转折时，必须拆成多个独立镜头，不得把拆镜写成可选建议，也不得在单条提示词中跨越这些变化。拆分后的每个镜头都必须完整写明文本连续性 DNA、文本开始状态和文本结束状态；相邻镜头需要连续时，前一镜头的结束状态必须与后一镜头的开始状态明确对应。
 
 ## 8. 色卡/风格 Bible
 
@@ -238,10 +243,10 @@ Constraints: no identity drift, no costume change, no prop morphing, no extra li
 
 常用强化句：
 
-- Identity drift: `preserve the exact same individual and mandatory facial anchors from the provided identity reference`.
+- Identity drift：按当前镜头实际生成模式修复。I2V/参考驱动模式使用 `preserve the exact same individual and mandatory facial anchors from the provided identity reference`；纯 T2V 不得添加 reference wording，必须在该镜头内重写完整 textual identity and recognition DNA。
 - Inconsistent sheet: `same individual/object in every panel, identical placement of every recognition mark`.
 - Wrong scale/owner: 重复精确尺寸、归属者和拿取方式；禁止混淆物品。
 - Too modern/clean: `period-accurate, weathered, repaired, practical, not factory-new`.
 - Missing signature mark: 把标志性特征移到主体第一句，并声明 mandatory。
-- Video drift: `no identity, wardrobe, material, color, damage-placement, or environment-layout changes`.
+- Video drift：先保持当前镜头实际生成模式不变。I2V/参考驱动模式可强化适用的已提供参考；纯 T2V 必须重写该镜头完整的文本连续性 DNA、开始状态和结束状态。共同约束使用 `no identity, wardrobe, material, color, damage-placement, or environment-layout changes`。
 - Extra text: `no text, labels, subtitles, logos, or watermark`; 把文字留给受控后期合成。
