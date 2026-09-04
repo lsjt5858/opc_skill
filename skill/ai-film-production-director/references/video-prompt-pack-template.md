@@ -9,7 +9,7 @@
 
 成片规格：{total_duration_if_known}，{aspect_ratio}，{visual_style}。
 平台单次生成范围：{clip_duration_range}。该范围只约束单条视频；不得据此推断成片总时长、固定镜头数或统一单镜时长。
-使用方式：每个镜头生成前，先上传对应参考图；把本文中的 `@[C01_NAME]` 这类占位符替换成实际素材引用 ID。
+使用方式：仅当 Production Spec 已确认目标平台支持参考输入且当前镜头需要参考资产时，上传对应参考资产，并把本文中的 `@[C01_NAME]` 这类占位符替换成实际素材引用 ID；纯 T2V 或目标平台不支持参考输入时，省略资产引用，改用已锁定的文本连续性 DNA。
 
 ## 0. 全局锁定
 
@@ -141,7 +141,7 @@ QC：{observable pass/fail checks with visible or audible evidence for identity,
 ## 5. 常用跑歪修复句
 
 - 身份漂移：`preserve the exact same individual and mandatory facial anchors from the provided identity reference.`
-- 画幅漂移：`{aspect_ratio} final video frame, not vertical, not square, not cropped portrait composition.`
+- 画幅漂移：`{aspect_ratio} final video frame, not {wrong_aspect_ratios}, no unintended crop or reframing.`
 - 文字漂移：`no readable text, no numbers, no app interface, no subtitles, no logos; all critical text will be composited in post.`
 - 道具漂移：`preserve the exact {prop} shape, material, scratches, worn edges, and current state from the prop reference.`
 - 表演过度：`follow the locked performance direction; remove unrequested exaggeration in voice, face, posture, and gesture.`
