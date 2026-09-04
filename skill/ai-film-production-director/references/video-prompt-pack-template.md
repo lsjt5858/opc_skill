@@ -10,10 +10,10 @@
 成片规格：{total_duration_if_known}，{aspect_ratio}，{visual_style}。
 平台单次生成范围：{clip_duration_range}。该范围只约束单条视频；不得据此推断成片总时长、固定镜头数或统一单镜时长。
 使用方式：先按 Production Spec 和镜头卡为每镜锁定一种生成模式，再只输出对应分支，禁止同时输出两种写法：
-- **I2V/参考驱动**：目标平台支持参考输入；每镜只传入实际存在、平台支持且当前镜头需要的资产子集，并只在单镜提示词中列出该子集的引用 token，不得把资产锚定表整表当作传入清单，也不得为不需要或不可用的资产保留占位符。
-- **纯 T2V**：不传入任何 token/UUID；单镜提示词删除全部资产引用行，以完整文本写明连续性 DNA 和开始状态，并在十栏目中的 `【尾帧】` 填写结束状态。`【尾帧】` 是提示词内结束状态的唯一权威定义。
+- **I2V/参考驱动**：目标平台支持参考输入；每镜只传入实际存在、平台支持且当前镜头需要的资产子集，并只在单镜提示词中以 `{input_handle}` 列出该子集；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，不得把资产锚定表整表当作传入清单，也不得为不需要或不可用的资产保留占位符。
+- **纯 T2V**：不传入任何输入句柄、来源帧或资产引用；单镜提示词删除全部资产引用行，以完整文本写明连续性 DNA 和开始状态，结束状态引用十栏目中的 `【尾帧】`。`【尾帧】` 是提示词内结束状态的唯一权威定义。
 
-若原定 I2V/参考驱动镜头遇到平台不支持参考输入，不得静默省略引用继续生成。只能二选一：先在 Production Spec 和镜头卡中显式将该镜生成模式改为纯 T2V、按纯 T2V 重写提示词，并重跑所有受生成模式、拆镜、资产依赖或 keyframe 策略影响的 Gate；任一受影响 Gate 未通过则保持阻塞。或保持阻塞并更换为支持参考输入的平台。
+若原定 I2V/参考驱动镜头遇到平台不支持参考输入，不得静默省略引用继续生成。只能二选一：先更新 Production Spec 与镜头卡，将该镜生成模式显式改为纯 T2V、按纯 T2V 重写提示词，并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞。或保持阻塞并更换为支持参考输入的平台。
 
 ## 0. 全局锁定
 
@@ -35,7 +35,7 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 
 ## 1. 资产锚定表（设计/追踪台账）
 
-本表用于包级资产设计、就绪状态和引用能力追踪，不等于任何单镜的传入清单。I2V/参考驱动镜头只能从中选择当前镜头实际需要、资产实际存在且平台支持的子集；纯 T2V 镜头不得从本表传入任何 token、UUID 或引用 ID。
+本表用于包级资产设计、就绪状态和引用能力追踪，不等于任何单镜的传入清单。I2V/参考驱动镜头只能从中选择当前镜头实际需要、资产实际存在且平台支持的子集，并将其可用引用方式规范化为 `{input_handle}`；纯 T2V 镜头不得从本表传入任何输入句柄或引用 ID。
 
 【角色】
 - C01 {character}: `@[C01_TOKEN]`
@@ -53,7 +53,7 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 - S01 {reference}: `@[S01_TOKEN]`
   `{local path}`
 
-每项同时记录其完整文本连续性 DNA、当前状态/用途、资产是否存在、目标平台是否支持及可用引用 ID；不存在、不支持或无 ID 时明确写“无/不适用”，不得伪造 token/UUID。
+以上 token 仅为 `{input_handle}` 的示例形式，不是必选契约。每项同时记录其完整文本连续性 DNA、当前状态/用途、资产是否存在、目标平台是否支持及可用引用方式；不存在、不支持或无可用句柄时明确写“无/不适用”，不得伪造 token、UUID、附件、URL 或 API 字段。
 
 ## 2. 镜头提示词
 ```
@@ -65,8 +65,9 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 - Production Spec 变量已锁定；尚未锁定的变量必须明确标注状态和责任方，不得静默猜测。
 - 当前镜头已在 Production Spec 和镜头卡中锁定为 I2V/参考驱动或纯 T2V，且提示词只使用对应分支。
 - I2V/参考驱动镜头 `【本镜输入】` 中的每个传入项均实际存在、平台支持、当前镜头需要且可访问，并已写明平台字段映射；不适用的资产类型不引用。
-- 纯 T2V 镜头的 `【本镜输入】` 写 `无/不适用`，不包含也不传入任何 token、UUID、来源帧或资产引用；已完整写明文本连续性 DNA 和开始状态，并由 `【尾帧】` 唯一定义结束状态。
+- 纯 T2V 镜头的 `【本镜输入】` 写 `无/不适用`，不包含也不传入任何输入句柄、来源帧或资产引用；已完整写明文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`。
 - 角色身份、服装/状态、道具状态和环境状态与镜头表一致。
+- 已锁定且需保持连续性的固定饰品可保留；禁止随机饰品和未锁定职业道具。
 - 画面中的关键文字已有明确后期合成、校对和替换策略。
 - 镜头的动作、运镜、状态变化和声音复杂度适合目标平台的单次生成能力；超出时先拆镜。
 
@@ -82,24 +83,24 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 
 【本镜输入】
 以下写法严格二选一；本栏目独立放在十栏目之前，不计入也不替代后续十个栏目。
-I2V/参考驱动：逐项填写 `{传入项名称/用途}: {实际 token/附件/URL/API 字段} → {目标平台字段}`；只能列实际存在且平台支持的当前镜头输入。
-纯 T2V：无/不适用（不得传入 token/UUID、来源帧或其他资产引用）。
+I2V/参考驱动：逐项填写 `{传入项名称/用途}: {input_handle} → {目标平台字段}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，只能列实际存在且平台支持的当前镜头输入。
+纯 T2V：无/不适用（不得传入输入句柄、来源帧或其他资产引用）。
 
 以下“生成模式连续性段”严格二选一，只保留当前镜头对应写法；它不新增或替代后续十个栏目。I2V/参考驱动的每条锚定行必须与 `【本镜输入】` 中的实际传入项逐项一致，不得多列或漏列。
 
-I2V/参考驱动写法（仅在平台支持且引用实际存在、当前镜头需要时保留需要的行）：
-@[S01_TOKEN] 作为{style/reference role}视觉锚定：{only the transferable style, palette, texture and lighting traits}。
+I2V/参考驱动写法（仅在平台支持且引用实际存在、当前镜头需要时保留需要的行；每个 `{input_handle}` 必须与 `【本镜输入】` 一致）：
+{input_handle} 作为{style/reference role}视觉锚定：{only the transferable style, palette, texture and lighting traits}。
 
-@[C01_TOKEN] 作为{character}视觉锚定：{identity, age, facial anchors, wardrobe, current state and restrained performance}。
+{input_handle} 作为{character}视觉锚定：{identity, age, facial anchors, wardrobe, current state and restrained performance}。
 
-@[P01_TOKEN] 作为{prop}视觉锚定：{shape, material, wear, current state, owner, screen/readability rule}。
+{input_handle} 作为{prop}视觉锚定：{shape, material, wear, current state, owner, screen/readability rule}。
 
-@[E01_TOKEN] 作为{environment}视觉锚定：{layout, light direction, time, weather, period details and spatial mood}。
+{input_handle} 作为{environment}视觉锚定：{layout, light direction, time, weather, period details and spatial mood}。
 
-纯 T2V 写法（删除以上全部资产引用行，不得传入 token/UUID）：
-【文本连续性 DNA】角色：{完整身份、年龄、面部锚点、服装与固定身份细节}；道具：{完整形状、材质、磨损、归属与当前状态}；环境：{完整空间布局、光线方向、时代细节、材质与氛围}；影像：{完整风格、色彩、纹理与照明约束}。
+纯 T2V 写法（删除以上全部资产引用行，不得传入输入句柄）：
+【文本连续性 DNA】角色：{完整身份、年龄、面部锚点、服装，以及已锁定且需保持连续性的固定饰品}；道具：{完整形状、材质、磨损、归属与当前状态}；环境：{完整空间布局、光线方向、时代细节、材质与氛围}；影像：{完整风格、色彩、纹理与照明约束}。
 【开始状态】{镜头开始时每个角色的位置、朝向、视线、姿态和表情；道具持有者、位置、方向和状态；环境、光线与摄影机状态}。
-纯 T2V 的结束状态只填写在下方十栏目中的 `【尾帧】`，不得在文本连续性块中重复定义。
+纯 T2V 的结束状态引用下方十栏目中的 `【尾帧】`，不得在文本连续性块中重复定义。
 
 【场景】
 {where and when the shot happens; spatial layout; this shot's explicit story function and the change it contributes; emotional situation; what the image should emphasize and avoid}。
@@ -133,7 +134,7 @@ NOT {wrong aspect ratio}，NOT {wrong style}，NOT {identity drift}，NOT {prop/
 
 【后期与 QC】
 后期：{subtitles, UI, numbers, messages, exact text, controlled compositing and sound handoff}。
-QC：{observable pass/fail checks with visible or audible evidence for identity, action count/order and timing, the single main camera movement, prop state, text policy, continuity, sound layers and exact tail frame}。
+QC：{observable pass/fail checks with visible or audible evidence for identity, action count/order and timing, the single main camera movement, prop state, text policy, continuity, sound layers and exact tail frame; for I2V/reference-driven shots, every anchor must match 【本镜输入】}。
 ```
 ````
 
@@ -150,10 +151,10 @@ QC：{observable pass/fail checks with visible or audible evidence for identity,
 - 每个镜头都有用于剪辑连续性的最终状态。
 - 声音设计服务故事，不添加不需要的背景音乐。
 - 每个镜头完整保留 `【场景】【运镜】【动作】【尾帧】【音效】【影像调性】【表演要求】【对白】【反向锚定】【后期与 QC】` 十个独立栏目。
-- 每个镜头在十栏目之前独立保留 `【本镜输入】`；该栏目不计入十栏目。I2V/参考驱动列实际传入项及平台字段映射，且锚定行逐项一致；纯 T2V 写 `无/不适用`，不传 token/UUID。
+- 每个镜头在十栏目之前独立保留 `【本镜输入】`；该栏目不计入十栏目。I2V/参考驱动以 `{input_handle}` 列实际传入项及平台字段映射，且正文锚定与 QC 只检查是否逐项与 `【本镜输入】` 一致；纯 T2V 写 `无/不适用`，不传任何输入句柄。
 - 平台单次生成范围只用于校验每条提示词时长；没有用户要求时，不推断成片总时长、镜头总数或统一单镜时长。
-- 每镜只输出一种生成模式连续性段：I2V/参考驱动只保留与 `【本镜输入】` 一致的实际使用 token 行；纯 T2V 无 token/UUID，以完整文本连续性 DNA 和开始状态承载起始连续性，并以 `【尾帧】` 作为结束状态的唯一权威定义，仍满足明确起止状态。
-- 原定 I2V/参考驱动镜头的平台不支持参考输入时，已显式同步 Production Spec 和镜头卡，并重跑所有受生成模式、拆镜、资产依赖或 keyframe 策略影响的 Gate；任一受影响 Gate 未通过则保持阻塞，或更换平台。不得静默省略引用继续生成。
+- 每镜只输出一种生成模式连续性段：I2V/参考驱动只保留与 `【本镜输入】` 一致的实际使用 `{input_handle}` 行；纯 T2V 无输入句柄，以完整文本连续性 DNA 和开始状态承载起始连续性，结束状态引用 `【尾帧】`，仍满足明确起止状态。
+- 原定 I2V/参考驱动镜头的平台不支持参考输入时，必须更新 Production Spec 与镜头卡，重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞，或更换平台。不得静默省略引用继续生成。
 
 ## 4. 包级质量标准
 
