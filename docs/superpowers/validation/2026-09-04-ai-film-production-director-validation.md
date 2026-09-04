@@ -25,13 +25,13 @@
 ## 定向生成契约
 
 - 纯 T2V：保留 `Dependency asset IDs`，`Input handles`/`【本镜输入】` 为 `无/不适用`，用文本 DNA、开始状态和 canonical `【尾帧】` 承载连续性，见 [5.1](./2026-09-04-ai-film-production-director-green-evidence.md#51-纯-t2v-保留依赖但不传模型输入)。
-- I2V 尾帧：结束帧在 canonical tail state 锁定后派生，并通过 Gate 3 逐字段与 Gate 4 进入检查；未把未执行的生成伪报为 Gate 4 退出通过，见 [5.2](./2026-09-04-ai-film-production-director-green-evidence.md#52-i2v-结束帧从-canonical-tail-state-派生)。
+- I2V 尾帧：规则应用响应先定义 canonical tail state，并要求结束帧由它生成；因没有实际 `end_22.png` 或视频文件，Gate 3 为待验证/阻塞，Gate 4 未进入。本场景只证明派生规则正确触发，不证明图片或视频 Gate 通过，见 [5.2](./2026-09-04-ai-film-production-director-green-evidence.md#52-i2v-结束帧从-canonical-tail-state-派生)。
 - 尾帧漂移：人物位置相同但姿态、朝向、手部/道具和环境运动不同，整体结论为阻塞，见 [5.3](./2026-09-04-ai-film-production-director-green-evidence.md#53-尾帧姿态与运动漂移冲突)。
-- 平台能力不足：不静默省略 I2V 输入；显式把镜头卡改为纯 T2V，保留依赖、清空输入、重写提示词，并重跑 Gate 1-4 的受影响检查，见 [5.4](./2026-09-04-ai-film-production-director-green-evidence.md#54-i2v-平台能力不足时显式改模式)。
+- 平台能力不足：规则应用响应没有静默省略 I2V 输入，而是提出显式改为纯 T2V、保留依赖、清空输入、重写提示词并重跑 Gate 1-4。因变更后的场景表、镜头卡、资产、storyboard/keyframe、尾帧、十栏目提示词和请求载荷未提供，受影响 Gate 均不得宣称通过；本场景只证明模式变更和重跑要求正确触发，见 [5.4](./2026-09-04-ai-film-production-director-green-evidence.md#54-i2v-平台能力不足时显式改模式)。
 
 ## 静态检查
 
-- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；命令、退出码和 stdout 见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
+- YAML、路径/旧标识、references、十栏目、动态分批、动态画幅、条件输入、纯 T2V 与 canonical tail 均通过实际静态检查；动态画幅正向命中为 9 行，反向固定画幅命中为 0。命令、退出码和 stdout 见原始证据 [第 6 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-静态检查命令与真实结果)。
 - `git diff --check 40aab9c..5c4b5b7`：exit `0`，原始结果见证据 [6.10](./2026-09-04-ai-film-production-director-green-evidence.md#610-固定-feature-range-diff)。
 
 ## 合理裁量
