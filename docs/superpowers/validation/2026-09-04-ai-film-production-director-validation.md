@@ -1,8 +1,9 @@
 # AI Film Production Director 验证摘要
 
 - 基线 commit：`40aab9c`
-- Feature range：`6d076dc..current implementation`
-- 运行方式：fresh subagent applying the skill。以下为已有观察的摘要，不是逐字输出转录。
+- Feature range：`6d076dc..be16b29`
+- Tested commit：`be16b29`
+- 运行方式：fresh subagent applying the skill。以下仅为摘要；完整输入、实际响应全文、命令和真实结果见 [GREEN 原始证据](./2026-09-04-ai-film-production-director-green-evidence.md)。
 
 ## 四个原始请求
 
@@ -14,23 +15,22 @@
 ## RED / GREEN
 
 - RED observed：旧入口存在命名不一致和模式过宽；信息不足时会带入未标注默认值；年龄与道具冲突未形成稳定阻塞；修补请求可能扩大为整包重写。
-- GREEN observed：单资产请求走最小路由；缺失变量进入已锁定/推断/待确认/可延后状态；年龄和怀表冲突阻塞受影响提示词并给出最小解决方案；N01 保留、N02 补尾帧、N03 因 C09 不存在而单独阻塞。
+- GREEN observed：单资产请求走最小路由；缺失变量进入已锁定/推断/待确认/可延后状态；年龄和怀表冲突阻塞受影响提示词并给出最小解决方案；N01 保留、N02 补尾帧、N03 因 C09 不存在而单独阻塞。对应完整输出见原始证据 [2.1-2.4](./2026-09-04-ai-film-production-director-green-evidence.md#2-四个原始请求)。
 
 ## 跨题材与跨平台
 
-- 跨题材：现实剧情、仙侠、悬疑、动画四类请求均沿用同一 Production Spec、阶段关口和十栏目契约；题材只改变已锁定的视觉与表演变量，未强加固定风格。
-- Platform A：支持参考输入时保留所需资产引用，并按平台单次能力拆分镜头。
-- Platform B：纯 T2V/不支持参考输入场景暴露了无条件上传参考图的问题；本轮已改为省略资产引用并使用已锁定的文本连续性 DNA。
+- 跨题材：现实家庭剧情、古装仙侠、现代悬疑、二维动画均使用七组 Production Spec 和同一阶段结构，同时保留各自的媒介、画幅和时长。输入与摘要见原始证据 [第 3 节](./2026-09-04-ai-film-production-director-green-evidence.md#3-跨题材实际执行)。
+- 跨平台：同一剧情在 Platform A 拆为三个单首帧短镜，在 Platform B 拆为两个首尾帧镜头；核心故事链、资产状态、统一生产链和 Gate 0-5 不变。输入、完整响应与矩阵见原始证据 [第 4 节](./2026-09-04-ai-film-production-director-green-evidence.md#4-精确跨平台矩阵实际执行)。
 
 ## 静态检查
 
-- `rg` 检查无条件 `先上传` 不存在，并检查 `纯 T2V`/`不支持参考输入` 分支：通过。
-- `rg` 检查 `{wrong_aspect_ratios}` 存在且固定 `not vertical, not square` 不存在：通过。
-- `rg` 检查三文件均使用 `环境音、动作音、强调音`，旧术语不存在：通过。
-- `rg` 检查本文件包含四请求、RED/GREEN、跨题材、Platform A/B 和三项合理裁量：通过。
-- `git diff --check`：通过。
-- `git status --porcelain=v1 --untracked-files=all` 白名单比对及 `git diff --quiet HEAD -- docs/superpowers/plans docs/superpowers/specs`：通过；仅包含本轮五个目标文件，plan/spec 未修改。
+- 路径、旧标识、十栏目、固定 N 分组、动态画幅、条件参考输入均通过实际 shell 检查；命令、退出码和 stdout 见原始证据 [第 5 节](./2026-09-04-ai-film-production-director-green-evidence.md#5-静态检查命令与真实结果)。
+- `git diff --check be16b29^..be16b29`：exit `0`，原始结果见证据 [5.7](./2026-09-04-ai-film-production-director-green-evidence.md#57-tested-commit-diff)。
 
 ## 合理裁量
 
 以下三项不作为缺口：最小请求附带必要的生成约束但不展开完整流程；信息不足时给出带状态的可选锁定值而非逐项停问；不存在的 C09 只报告阻塞并请求有效资产，不虚构替代 ID。
+
+## 自审
+
+观察结果与具体证据章节的映射、测试性质及 CLI 声明见原始证据 [第 6-7 节](./2026-09-04-ai-film-production-director-green-evidence.md#6-观察结果与证据索引)。
