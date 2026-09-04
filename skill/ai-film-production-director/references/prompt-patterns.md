@@ -43,8 +43,8 @@
 
 【连续性】
 - 视频镜头类资产按实际生成模式填写：
-  - I2V/参考驱动：`【本镜输入】：{input_handle} → {目标平台字段}`，只列实际存在、适用且已就绪的输入；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，token 仅为示例形式；正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。结束帧输入必须由该镜头权威 `【尾帧】` 定义派生，不得独立定义结束状态。
-  - 纯 T2V：明确写 `【本镜输入】：无/不适用`；该标签仅是交付元数据声明，不是提示词引用；其余只写完整的文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`，不得出现输入句柄或伪参考。
+  - I2V/参考驱动：`【本镜输入】：{input_handle} → {目标平台字段}`，只列实际存在、适用且已就绪的输入；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，token 仅为示例形式；正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。结束帧输入必须从镜头卡 `Canonical tail state / 权威尾帧定义` 派生，不得独立定义结束状态。
+  - 纯 T2V：明确写 `【本镜输入】：无/不适用`；该标签仅是交付元数据声明，不是提示词引用；其余只写完整的文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state，不得出现输入句柄、结束帧资产或伪参考。
 - 角色、道具、环境资产仍按其自身实际依赖关系记录依赖资产和参考资产 ID，不适用上述视频镜头模式条件。
 
 【prompt】
@@ -179,7 +179,7 @@ a production environment reference sheet for {environment ID/name}, empty set wi
 - 环境、天气和明确光线方向；
 - 成对使用时标明 start 或 end。
 
-I2V 的 end keyframe/结束帧不是独立创作源：必须由该镜头权威 `【尾帧】` 定义派生，并逐项复现人物位置、视线、道具状态、光线、构图和剪辑接口。无法保证一致时，只生成或传入 start keyframe/起始帧，或阻塞修正；不得保留第二套结束状态。
+I2V 的 end keyframe/结束帧不是独立创作源：必须从 Gate 3 前已锁定的镜头卡 `Canonical tail state / 权威尾帧定义` 派生，并逐项复现人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口。无法保证一致时，只生成或传入 start keyframe/起始帧，或阻塞修正；不得保留第二套结束状态。
 
 ```text
 cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. Preserve the exact identity and recognition features from {character references}, wardrobe/state from {state IDs}, prop design/state from {prop IDs}, and environment geometry/light direction from {environment IDs}. Camera: {framing/lens/angle}. Blocking: {positions, gaze, hands, action state}. Environment: {time/weather/background}. Lighting: {source/direction/quality}. {style/quality}. no extra characters, no identity drift, no costume or prop-state change, no unintended text, no watermark.
@@ -187,17 +187,17 @@ cinematic keyframe for {shot ID}, {final aspect ratio}. Story purpose: {beat}. P
 
 ## 7. Image-to-Video / Text-to-Video 镜头
 
-明确分开主体运动、摄影机运动、环境运动、时间和 `【尾帧】`；最终视频镜头的结束状态只在 `【尾帧】` 定义。
+明确分开主体运动、摄影机运动、环境运动、时间和 `【尾帧】`；结束状态只在镜头卡 canonical tail state 定义，最终视频提示词的 `【尾帧】` 逐项忠实映射该值。
 
 严格按当前镜头的实际生成模式二选一，不得仅因平台支持参考输入就把纯 T2V 镜头改写成 I2V/参考驱动镜头：
 
-- 当前镜头实际采用 I2V/参考驱动模式：再检查平台是否支持所需输入，只使用实际存在、适用于该镜头且已就绪的 `{input_handle}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。可以使用结束帧，但该资产必须由本镜头权威 `【尾帧】` 定义派生，并在人物位置、视线、道具状态、光线、构图和剪辑接口上完全一致；无法保证时，只允许起始帧输入或阻塞修正，不得另设结束状态。平台不支持所需输入时，不得保留伪引用或静默切换；只能先更新 Production Spec 与镜头卡，将该镜生成模式改为纯 T2V、按纯 T2V 重写提示词，并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞。否则更换为支持所需参考输入的平台。
-- 当前镜头实际采用纯 T2V：无论平台是否支持参考输入，都必须省略来源帧、结束帧、资产引用和输入句柄，不得编造或暗示外部参考；在每个镜头提示词内完整重复文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`，不得在文本连续性块重复定义。
+- 当前镜头实际采用 I2V/参考驱动模式：再检查平台是否支持所需输入，只使用实际存在、适用于该镜头且已就绪的 `{input_handle}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，正文锚定与 QC 只要求逐项与 `【本镜输入】` 一致。可以使用结束帧，但该资产必须从镜头卡 canonical tail state 派生，并在人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口上完全一致；无法保证时，只允许起始帧输入或阻塞修正，不得另设结束状态。平台不支持所需输入时，不得保留伪引用或静默切换；只能先更新 Production Spec 与镜头卡，将该镜生成模式改为纯 T2V、按纯 T2V 重写提示词，并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞。否则更换为支持所需参考输入的平台。
+- 当前镜头实际采用纯 T2V：无论平台是否支持参考输入，都必须省略来源帧、结束帧资产、资产引用和输入句柄，不得编造或暗示外部参考；在每个镜头提示词内完整重复文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state，不得在文本连续性块重复定义或另创。
 
 I2V / 参考驱动模式：
 
 ```text
-cinematic {duration}s video shot for {shot ID}, {final aspect ratio}. Use only these inputs from 【本镜输入】: {input_handle list and platform-field mapping}. Any end-frame input is derived from this shot's canonical 【尾帧】 and matches its character positions, eyelines, prop state, lighting, composition, and edit handoff exactly. Preserve exact character identity, wardrobe/state, prop marks/state, environment geometry, palette, and lighting direction from those inputs.
+cinematic {duration}s video shot for {shot ID}, {final aspect ratio}. Use only these inputs from 【本镜输入】: {input_handle list and platform-field mapping}. Any end-frame input is derived from this shot card's canonical tail state and matches its character positions, eyelines, prop holder/state/direction, lighting, framing, camera position/angle, frame layout, and next-shot edit handoff exactly. Preserve exact character identity, wardrobe/state, prop marks/state, environment geometry, palette, and lighting direction from those inputs.
 ```
 
 纯 T2V：
@@ -215,7 +215,7 @@ Subject motion: {one clear action sequence}.
 Camera motion: {dolly/pan/tilt/orbit/handheld/static}.
 Environment motion: {rain/dust/cloth/crowd/light}.
 Timing: {0-1s}, {1-3s}, {final second}.
-【尾帧】{editable final visual state; the sole source of truth for this shot's end state}.
+【尾帧】{faithful field-by-field mapping of the shot card canonical tail state: character positions and eyelines; prop holder/state/direction; lighting state/direction; framing; camera position/angle; frame layout; next-shot edit handoff; do not invent or alter values}.
 Constraints: no identity drift, no costume change, no prop morphing, no extra limbs, no camera teleport, no unrequested scene cut, no text, no logo.
 ```
 
@@ -223,7 +223,7 @@ Constraints: no identity drift, no costume change, no prop morphing, no extra li
 
 独立提示词路径中，任何 I2V/参考驱动到纯 T2V 的模式切换都属于生产契约变更：必须更新 Production Spec 与镜头卡，重写该镜提示词，并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate。任一受影响 Gate 未通过则阻塞；无法完成时更换平台，不得只删除 reference wording 后继续生成。
 
-纯 T2V 遇到强状态变化、match cut、强 blocking 变化或身份敏感转折时，必须拆成多个独立镜头，不得把拆镜写成可选建议，也不得在单条提示词中跨越这些变化。拆分后的每个镜头都必须完整写明文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`；相邻镜头需要连续时，前一镜头的 `【尾帧】` 必须与后一镜头的开始状态明确对应。
+纯 T2V 遇到强状态变化、match cut、强 blocking 变化或身份敏感转折时，必须拆成多个独立镜头，不得把拆镜写成可选建议，也不得在单条提示词中跨越这些变化。拆分后的每个镜头都必须完整写明文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射各自镜头卡 canonical tail state；相邻镜头需要连续时，前一镜头的 canonical tail state 必须与后一镜头的开始状态明确对应。
 
 ## 8. 色卡/风格 Bible
 
@@ -255,5 +255,5 @@ Constraints: no identity drift, no costume change, no prop morphing, no extra li
 - Wrong scale/owner: 重复精确尺寸、归属者和拿取方式；禁止混淆物品。
 - Too modern/clean: `period-accurate, weathered, repaired, practical, not factory-new`.
 - Missing signature mark: 把标志性特征移到主体第一句，并声明 mandatory。
-- Video drift：先保持当前镜头实际生成模式不变。I2V/参考驱动模式可强化与 `【本镜输入】` 一致的 `{input_handle}`；纯 T2V 必须重写该镜头完整的文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`。共同约束使用 `no identity, wardrobe, material, color, damage-placement, or environment-layout changes`。
+- Video drift：先保持当前镜头实际生成模式不变。I2V/参考驱动模式可强化与 `【本镜输入】` 一致的 `{input_handle}`；纯 T2V 必须重写该镜头完整的文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 仍忠实映射镜头卡 canonical tail state。共同约束使用 `no identity, wardrobe, material, color, damage-placement, or environment-layout changes`。
 - Extra text: `no text, labels, subtitles, logos, or watermark`; 把文字留给受控后期合成。

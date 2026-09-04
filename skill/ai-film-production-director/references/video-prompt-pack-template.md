@@ -10,8 +10,8 @@
 成片规格：{total_duration_if_known}，{aspect_ratio}，{visual_style}。
 平台单次生成范围：{clip_duration_range}。该范围只约束单条视频；不得据此推断成片总时长、固定镜头数或统一单镜时长。
 使用方式：先按 Production Spec 和镜头卡为每镜锁定一种生成模式，再只输出对应分支，禁止同时输出两种写法：
-- **I2V/参考驱动**：目标平台支持参考输入；每镜只传入实际存在、平台支持且当前镜头需要的资产子集，并只在单镜提示词中以 `{input_handle}` 列出该子集；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，不得把资产锚定表整表当作传入清单，也不得为不需要或不可用的资产保留占位符。允许使用结束帧，但结束帧资产必须由该镜头权威 `【尾帧】` 定义派生，并保持人物位置、视线、道具状态、光线、构图和剪辑接口一致；无法保证时只允许起始帧输入或阻塞修正，不得另设结束状态。
-- **纯 T2V**：不传入任何输入句柄、来源帧或资产引用；单镜提示词删除全部资产引用行，以完整文本写明连续性 DNA 和开始状态，结束状态引用十栏目中的 `【尾帧】`。`【尾帧】` 是提示词内结束状态的唯一权威定义。
+- **I2V/参考驱动**：目标平台支持参考输入；每镜只传入实际存在、平台支持且当前镜头需要的资产子集，并只在单镜提示词中以 `{input_handle}` 列出该子集；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，不得把资产锚定表整表当作传入清单，也不得为不需要或不可用的资产保留占位符。允许使用结束帧，但结束帧资产必须从镜头卡已锁定的 `Canonical tail state / 权威尾帧定义` 派生，并保持人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口一致；无法保证时只允许起始帧输入或阻塞修正，不得另设结束状态。
+- **纯 T2V**：不传入任何输入句柄、来源帧、资产引用或结束帧资产；单镜提示词删除全部资产引用行，以完整文本写明连续性 DNA 和开始状态。十栏目 `【尾帧】` 同样忠实映射镜头卡 canonical tail state，不得另创结束状态。
 
 若原定 I2V/参考驱动镜头遇到平台不支持参考输入，不得静默省略引用继续生成。只能二选一：先更新 Production Spec 与镜头卡，将该镜生成模式显式改为纯 T2V、按纯 T2V 重写提示词，并重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞。或保持阻塞并更换为支持参考输入的平台。
 
@@ -64,8 +64,9 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 
 - Production Spec 变量已锁定；尚未锁定的变量必须明确标注状态和责任方，不得静默猜测。
 - 当前镜头已在 Production Spec 和镜头卡中锁定为 I2V/参考驱动或纯 T2V，且提示词只使用对应分支。
-- I2V/参考驱动镜头 `【本镜输入】` 中的每个传入项均实际存在、平台支持、当前镜头需要且可访问，并已写明平台字段映射；不适用的资产类型不引用。若包含结束帧，已证明该资产由本镜头权威 `【尾帧】` 定义派生，人物位置、视线、道具状态、光线、构图和剪辑接口逐项一致；否则删除结束帧、只保留起始帧，或阻塞修正。
-- 纯 T2V 镜头的 `【本镜输入】` 写 `无/不适用`，不包含也不传入任何输入句柄、来源帧或资产引用；已完整写明文本连续性 DNA 和开始状态，结束状态引用 `【尾帧】`。
+- 镜头卡已在 Gate 3 前锁定 `Canonical tail state / 权威尾帧定义`，完整包含人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口；它是结束状态的唯一真源。
+- I2V/参考驱动镜头 `【本镜输入】` 中的每个传入项均实际存在、平台支持、当前镜头需要且可访问，并已写明平台字段映射；不适用的资产类型不引用。若包含结束帧，已证明该资产从镜头卡 canonical tail state 派生并逐项一致；否则删除结束帧、只保留起始帧，或阻塞修正。
+- 纯 T2V 镜头的 `【本镜输入】` 写 `无/不适用`，不包含也不传入任何输入句柄、来源帧、资产引用或结束帧资产；已完整写明文本连续性 DNA 和开始状态，十栏目 `【尾帧】` 忠实映射镜头卡 canonical tail state。
 - 角色身份、服装/状态、道具状态和环境状态与镜头表一致。
 - 已锁定且需保持连续性的固定饰品可保留；禁止随机饰品和未锁定职业道具。
 - 画面中的关键文字已有明确后期合成、校对和替换策略。
@@ -83,7 +84,7 @@ AI 画面统一约束：no readable text, no numbers, no app interface, no subti
 
 【本镜输入】
 以下写法严格二选一；本栏目独立放在十栏目之前，不计入也不替代后续十个栏目。
-I2V/参考驱动：逐项填写 `{传入项名称/用途}: {input_handle} → {目标平台字段}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，只能列实际存在且平台支持的当前镜头输入。结束帧用途必须注明“由本镜头 `【尾帧】` 派生”，不得在输入栏另写结束状态。
+I2V/参考驱动：逐项填写 `{传入项名称/用途}: {input_handle} → {目标平台字段}`；`{input_handle}` 可映射为 token、附件、URL 或 API 字段，只能列实际存在且平台支持的当前镜头输入。结束帧用途必须注明“由镜头卡 canonical tail state 派生”，不得在输入栏另写结束状态。
 纯 T2V：无/不适用（不得传入输入句柄、来源帧或其他资产引用）。
 
 以下“生成模式连续性段”严格二选一，只保留当前镜头对应写法；它不新增或替代后续十个栏目。I2V/参考驱动的每条锚定行必须与 `【本镜输入】` 中的实际传入项逐项一致，不得多列或漏列。
@@ -100,7 +101,7 @@ I2V/参考驱动写法（仅在平台支持且引用实际存在、当前镜头�
 纯 T2V 写法（删除以上全部资产引用行，不得传入输入句柄）：
 【文本连续性 DNA】角色：{完整身份、年龄、面部锚点、服装，以及已锁定且需保持连续性的固定饰品}；道具：{完整形状、材质、磨损、归属与当前状态}；环境：{完整空间布局、光线方向、时代细节、材质与氛围}；影像：{完整风格、色彩、纹理与照明约束}。
 【开始状态】{镜头开始时每个角色的位置、朝向、视线、姿态和表情；道具持有者、位置、方向和状态；环境、光线与摄影机状态}。
-纯 T2V 的结束状态引用下方十栏目中的 `【尾帧】`，不得在文本连续性块中重复定义。
+纯 T2V 的结束状态由下方十栏目 `【尾帧】` 映射镜头卡 canonical tail state；不需要结束帧资产，也不得在文本连续性块中重复定义或另创。
 
 【场景】
 {where and when the shot happens; spatial layout; this shot's explicit story function and the change it contributes; emotional situation; what the image should emphasize and avoid}。
@@ -115,7 +116,7 @@ I2V/参考驱动写法（仅在平台支持且引用实际存在、当前镜头�
 以上时间段首尾相接、无重叠无空档，连续覆盖完整生成时长；主体动作、环境运动和状态变化均在对应时间段内可观察。
 
 【尾帧】
-{exact final visual state; every character's position and eyeline; prop holder, state and direction; lighting state and direction; next-shot edit handoff}。
+忠实映射镜头卡 `Canonical tail state / 权威尾帧定义`：{every character's position and eyeline; prop holder, state and direction; lighting state and direction; framing; camera position/angle; frame layout; next-shot edit handoff}。不得删改或另创。
 
 【音效】
 环境音：{background room tone/environment sound or 无}；动作音：{time-coded action sounds or 无}；强调音：{time-coded emphasis sounds or 无}；对白/人声：{dialogue/voice treatment or 无}；音乐：{follow the locked Production Spec music policy or 无}。
@@ -134,7 +135,7 @@ NOT {wrong aspect ratio}，NOT {wrong style}，NOT {identity drift}，NOT {prop/
 
 【后期与 QC】
 后期：{subtitles, UI, numbers, messages, exact text, controlled compositing and sound handoff}。
-QC：{observable pass/fail checks with visible or audible evidence for identity, action count/order and timing, the single main camera movement, prop state, text policy, continuity, sound layers and exact tail frame; for I2V/reference-driven shots, every anchor must match 【本镜输入】, any end-frame input must be derived from 【尾帧】, and the generated result must land on that same 【尾帧】 state}。
+QC：{observable pass/fail checks with visible or audible evidence for identity, action count/order and timing, the single main camera movement, prop state, text policy, continuity, sound layers and exact tail frame; 【尾帧】 must faithfully map the shot card canonical tail state; for I2V/reference-driven shots, every anchor must match 【本镜输入】 and any end-frame input must be derived from that canonical tail state; for every generation mode, the generated result must land on that same state}。
 ```
 ````
 
@@ -148,12 +149,12 @@ QC：{observable pass/fail checks with visible or audible evidence for identity,
 - 反复出现的道具有精确归属者、材质、损坏/磨损和屏幕状态。
 - 手机/UI/腕带/收据/聊天/药品标签文字采用后期合成。
 - 场景顺序在物理和情绪上自洽。
-- 每个镜头都有用于剪辑连续性的最终状态。
+- 每个镜头卡都在 Gate 3 前锁定完整的 `Canonical tail state / 权威尾帧定义`，作为结束状态唯一真源。
 - 声音设计服务故事，不添加不需要的背景音乐。
 - 每个镜头完整保留 `【场景】【运镜】【动作】【尾帧】【音效】【影像调性】【表演要求】【对白】【反向锚定】【后期与 QC】` 十个独立栏目。
-- 每个镜头在十栏目之前独立保留 `【本镜输入】`；该栏目不计入十栏目。I2V/参考驱动以 `{input_handle}` 列实际传入项及平台字段映射，且正文锚定与 QC 只检查是否逐项与 `【本镜输入】` 一致；结束帧输入只能由该镜头权威 `【尾帧】` 定义派生，不一致时只保留起始帧输入或阻塞修正。纯 T2V 写 `无/不适用`，不传任何输入句柄。
+- 每个镜头在十栏目之前独立保留 `【本镜输入】`；该栏目不计入十栏目。I2V/参考驱动以 `{input_handle}` 列实际传入项及平台字段映射，且正文锚定与 QC 只检查是否逐项与 `【本镜输入】` 一致；结束帧输入只能从镜头卡 canonical tail state 派生，不一致时只保留起始帧输入或阻塞修正。纯 T2V 写 `无/不适用`，不传任何输入句柄或结束帧资产。
 - 平台单次生成范围只用于校验每条提示词时长；没有用户要求时，不推断成片总时长、镜头总数或统一单镜时长。
-- 每镜只输出一种生成模式连续性段：I2V/参考驱动只保留与 `【本镜输入】` 一致的实际使用 `{input_handle}` 行；纯 T2V 无输入句柄，以完整文本连续性 DNA 和开始状态承载起始连续性，结束状态引用 `【尾帧】`，仍满足明确起止状态。
+- 每镜只输出一种生成模式连续性段：I2V/参考驱动只保留与 `【本镜输入】` 一致的实际使用 `{input_handle}` 行；纯 T2V 无输入句柄或结束帧资产，以完整文本连续性 DNA 和开始状态承载起始连续性；两种模式的十栏目 `【尾帧】` 都忠实映射镜头卡 canonical tail state。
 - 原定 I2V/参考驱动镜头的平台不支持参考输入时，必须更新 Production Spec 与镜头卡，重跑所有受生成模式、拆镜、资产依赖、storyboard/keyframe 策略影响的 Gate；任一受影响 Gate 未通过则阻塞，或更换平台。不得静默省略引用继续生成。
 
 ## 4. 包级质量标准
@@ -162,8 +163,8 @@ QC：{observable pass/fail checks with visible or audible evidence for identity,
 - **资产可追踪**：每个实际引用都能追溯到存在且就绪的资产 ID。
 - **镜头可执行**：每个单镜头只有一个主要叙事节拍和一个主要摄影机运动，单次复杂度适配目标平台，并完整保留十个独立栏目。
 - **时间可验证**：动作时间段连续覆盖生成时长，关键动作和声音有可观察时间点。
-- **剪辑可衔接**：尾帧明确人物位置、视线、道具状态、光线和剪辑接口。
-- **I2V 单一尾帧真源**：结束帧资产由 `【尾帧】` 派生，生成结果落在同一 `【尾帧】` 状态；任何人物位置、视线、道具状态、光线、构图或剪辑接口差异都必须返修，不能形成第二套结束状态。
+- **剪辑可衔接**：尾帧明确人物位置、视线、道具持有/状态/方向、光线、景别、机位、画面布局和下一镜剪辑接口。
+- **单一尾帧真源**：镜头卡 `Canonical tail state / 权威尾帧定义` 是唯一真源；I2V 结束帧资产与两种生成模式的十栏目 `【尾帧】` 都从它派生或映射，生成结果落在同一状态。任何逐项差异都必须返修，不能形成第二套结束状态。
 - **后期可落地**：关键文字、合成项和声音交接均有明确策略。
 
 ## 5. 常用跑歪修复句
