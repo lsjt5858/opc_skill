@@ -10,3 +10,6 @@
 [submodule "skill/xianxia-visual-director"]
 	path = skill/xianxia-visual-director
 	url = git@github.com:liyue-aigc/xianxia-visual-director.git
+[submodule "skill/jianying-editor-skill"]
+	path = skill/jianying-editor-skill
+	url = git@github.com:luoluoluo22/jianying-editor-skill.git

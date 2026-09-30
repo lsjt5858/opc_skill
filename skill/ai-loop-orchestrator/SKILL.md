@@ -1,74 +1,74 @@
 ---
 name: ai-loop-orchestrator
-description: Design bounded AI agent loops and skill workflows for complex goals. Use when the user mentions AI loops, goal loops, autonomous/automatic agent work, repeated iteration, verification criteria, stop conditions, token/cost control, scheduled monitoring, multi-agent workflows, or wants to turn a broad objective into a reusable skill-driven workflow.
+description: 为复杂目标设计有边界的 AI 智能体循环和技能工作流。当用户提到 AI 循环、目标循环、自主或自动化智能体工作、重复迭代、验收标准、停止条件、Token 或成本控制、定时监控、多智能体工作流，或希望将宽泛目标转成可复用的技能驱动工作流时使用。
 ---
 
-# AI Loop Orchestrator
+# AI 循环编排器
 
-Turn a broad request into a bounded loop specification before executing it. Prefer the simplest loop that can meet the objective with clear validation.
+执行前，先将宽泛请求转成有边界的循环规格。优先选择能通过明确验证来达成目标的最简单循环。
 
-## Core Workflow
+## 核心工作流
 
-1. Classify the loop.
-   - **Turn loop**: one normal agent turn with local verification; use for short, non-recurring tasks.
-   - **Goal loop**: repeat until a measurable condition is satisfied; use for tasks with explicit acceptance criteria.
-   - **Timed loop**: repeat on a schedule or interval; use for polling, reminders, PR/CI monitoring, or recurring reports.
-   - **Event loop**: react to external events; use when connectors, webhooks, CI, mail, or chat events are the true trigger.
-   - **Workflow loop**: coordinate subagents or scripted orchestration; use for large migrations, codebase audits, research, or parallel solution exploration.
+1. 判断循环类型。
+   - **单轮循环**：由智能体正常执行一轮并在本地验证；用于简短、非周期性任务。
+   - **目标循环**：重复执行，直到满足可衡量的条件；用于有明确验收标准的任务。
+   - **定时循环**：按计划或时间间隔重复执行；用于轮询、提醒、PR/CI 监控或周期性报告。
+   - **事件循环**：响应外部事件；当连接器、Webhook、CI、邮件或聊天事件是真正触发源时使用。
+   - **工作流循环**：协调子智能体或脚本化编排；用于大型迁移、代码库审计、研究或并行探索解决方案。
 
-2. Write a loop spec in working notes before acting:
-   - **Objective**: one sentence describing the destination.
-   - **Trigger**: user prompt, explicit goal, time interval, event, or manual resume.
-   - **Stop condition**: measurable success, max turns/time, empty queue, merged PR, clean test result, or user decision required.
-   - **Verification**: commands, screenshots, rendered artifacts, logs, review pass, source citations, or external system checks.
-   - **Budget**: max attempts/turns, model/tool intensity, subagent count, and any expensive steps to avoid.
-   - **State**: what to remember between iterations: task list, files touched, failures, IDs, links, commands run.
+2. 执行前，在工作记录中写下循环规格：
+   - **目标**：用一句话描述最终要达到的状态。
+   - **触发条件**：用户提示、明确目标、时间间隔、事件或手动恢复。
+   - **停止条件**：可衡量的成功标准、最大轮次或时长、队列清空、PR 已合并、测试结果无异常，或需要用户决策。
+   - **验证方式**：命令、截图、渲染产物、日志、审查通过、来源引用或外部系统检查。
+   - **预算**：最大尝试次数或轮次、模型和工具的使用强度、子智能体数量，以及需要避免的高成本步骤。
+   - **状态**：迭代之间需要保留的信息，包括任务列表、已修改文件、失败记录、ID、链接和已运行命令。
 
-3. Execute in small iterations:
-   - Gather only the context needed for the next decision.
-   - Make scoped changes or produce the requested artifact.
-   - Run the strongest practical verification available.
-   - If verification fails, update the working hypothesis and repeat.
-   - Stop only when a named terminal state applies.
+3. 以小步迭代方式执行：
+   - 仅收集下一步决策所需的上下文。
+   - 进行范围明确的修改，或产出用户要求的成果。
+   - 执行当前条件下最强且可行的验证。
+   - 如果验证失败，更新当前假设并继续迭代。
+   - 仅在命中已定义的终止状态时停止。
 
-4. Report the terminal state:
-   - **Achieved**: include the evidence.
-   - **Needs user decision**: state the exact unresolved choice.
-   - **Blocked**: state the blocking condition and what would unblock it.
-   - **Budget reached**: summarize progress and remaining risk.
-   - **Unsafe/unapproved**: explain the specific operation requiring consent.
+4. 报告终止状态：
+   - **已达成**：附上验证证据。
+   - **需要用户决策**：说明尚未解决的具体选择。
+   - **受阻**：说明阻塞条件以及解除阻塞所需的事项。
+   - **预算已用尽**：总结当前进度和剩余风险。
+   - **不安全或未经批准**：解释需要用户授权的具体操作。
 
-## Primitive Selection
+## 执行机制选择
 
-- Use the ordinary Codex turn loop by default.
-- If the user explicitly asks to start or run a goal and the goal tool is available, create a goal with a concrete objective and complete it only after evidence supports success.
-- If the user asks for reminders, monitoring, recurring checks, or schedules, search for the automation tool first and use it instead of hand-writing schedule instructions.
-- If the task is parallelizable and high-value, use subagents or workflow tools only after defining independent worker prompts and a review/merge step.
-- If a domain skill exists, invoke it for the verification loop: Playwright for UI/browser behavior, PDF/DOCX skills for rendered documents, GitHub skills for PR comments/CI, Lark skills for Feishu workflows, and so on.
+- 默认使用普通的 Codex 单轮执行机制。
+- 如果用户明确要求启动或运行一个目标，且目标工具可用，则创建一个具有具体目标的 goal；只有在证据能够证明成功后，才将其标记为完成。
+- 如果用户要求提醒、监控、周期性检查或定时任务，先查找自动化工具并使用它，不要手写调度说明。
+- 如果任务可并行且价值较高，应先定义相互独立的工作提示和审查或合并步骤，再使用子智能体或工作流工具。
+- 如果存在领域技能，在验证循环中调用它，例如使用 Playwright 验证 UI 或浏览器行为，使用 PDF/DOCX 技能验证渲染文档，使用 GitHub 技能处理 PR 评论或 CI，使用 Lark 技能处理飞书工作流等。
 
-## Verification Ladder
+## 验证层级
 
-Pick the highest rung that is feasible and proportional to risk:
+选择当前可行且与风险相匹配的最高验证层级：
 
-1. **Reasoned check**: explain why the output satisfies the request.
-2. **Static check**: inspect files, schemas, types, diffs, or citations.
-3. **Command check**: run tests, linters, builds, scripts, or validators.
-4. **Runtime check**: exercise the app/API/document/browser and inspect real output.
-5. **Independent review**: use a fresh reviewer/subagent or adversarial pass for high-risk changes.
+1. **推理检查**：解释为什么输出满足用户要求。
+2. **静态检查**：检查文件、Schema、类型、差异或引用。
+3. **命令检查**：运行测试、Linter、构建、脚本或验证器。
+4. **运行时检查**：实际操作应用、API、文档或浏览器，并检查真实输出。
+5. **独立审查**：对于高风险变更，使用新的审查者、子智能体或对抗性检查。
 
-Do not claim completion from edits alone when a runnable or inspectable verification path exists.
+如果存在可运行或可检查的验证路径，不得仅凭完成编辑就宣称任务完成。
 
-## Token And Cost Control
+## Token 与成本控制
 
-- Avoid multi-agent workflows for small tasks.
-- Prefer deterministic commands and scripts over model reasoning for repeatable checks.
-- Cap attempts explicitly when success is uncertain.
-- Reuse existing repo commands, skills, and artifacts before inventing new machinery.
-- Keep loop memory compact: current hypothesis, next action, evidence, and remaining failures.
-- For recurring work, align frequency to how often the external state can realistically change.
+- 小型任务不要使用多智能体工作流。
+- 对于可重复检查，优先使用确定性的命令和脚本，而不是模型推理。
+- 当成功具有不确定性时，明确设置尝试次数上限。
+- 优先复用仓库现有的命令、技能和产物，再考虑引入新机制。
+- 保持循环记忆精简，仅保留当前假设、下一步操作、证据和剩余失败项。
+- 对于周期性工作，应根据外部状态实际可能发生变化的频率设置执行周期。
 
-## Reusable Loop Design
+## 可复用循环设计
 
-When the user wants a loop they can reuse later, create or update a skill only if the workflow will recur. Keep the skill concise, put detailed decision tables in `references/`, and include concrete trigger language in the skill description.
+当用户希望以后复用某个循环时，只有在该工作流确实会重复使用的情况下，才创建或更新技能。保持技能简洁，将详细决策表放在 `references/` 中，并在技能描述中写明具体触发条件。
 
-Read `references/loop-selection.md` when designing a reusable loop, comparing loop types, or drafting a prompt/spec for another agent.
+设计可复用循环、比较循环类型，或为其他智能体起草提示词或规格时，读取 `references/loop-selection.md`。

@@ -32,18 +32,18 @@ git submodule update --init --recursive
 
 ### 更新子模块
 
-当任一子模块上游有更新时（如 [khazix-skills](https://github.com/KKKKhazix/khazix-skills) 或 [seedance-2.0](https://github.com/Emily2040/seedance-2.0)），按以下步骤同步（以 khazix-skills 为例，替换为对应子模块路径即可）：
+在项目根目录执行：
 
 ```bash
-# 1. 进入子模块目录，拉取最新代码
-cd skill/khazix-skills
-git pull origin main
+# 仅预览当前子模块，不修改仓库
+./scripts/update-submodules.sh
 
-# 2. 回到主项目根目录，提交子模块版本引用
-cd ../../
-git add skill/khazix-skills
-git commit -m "chore: 更新 khazix-skills 到最新版本"
-git push
+# 实际同步全部子模块的远程最新代码
+./scripts/update-submodules.sh --execute
 ```
 
-更新 seedance-2.0 时，将路径替换为 `skill/seedance-2.0` 即可。
+脚本会动态读取 `.gitmodules`，同步 URL、递归初始化并更新全部子模块。后续通过
+`git submodule add <仓库地址> <目录>` 添加新子模块后，无需修改同步脚本。
+
+如果任一子模块存在未提交修改，脚本会停止更新，避免覆盖本地工作。同步完成后，
+主仓库会显示子模块版本引用发生变化，需要按需提交这些变更。

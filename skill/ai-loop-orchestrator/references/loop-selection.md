@@ -1,53 +1,53 @@
-# Loop Selection Reference
+# 循环选择参考
 
-## Decision Table
+## 决策表
 
-| Need | Loop type | Stop condition | Verification | Cost control |
+| 需求 | 循环类型 | 停止条件 | 验证方式 | 成本控制 |
 | --- | --- | --- | --- | --- |
-| Quick one-off code/content task | Turn loop | Agent proves task done or asks for context | Focused tests, file inspection, screenshots, citations | Specific prompt and smallest useful context |
-| Complex task with measurable finish line | Goal loop | Acceptance criteria pass or max turns/time reached | Transcript-visible evidence: test output, build exit, metrics, checklist | Explicit max attempts and one measurable target |
-| PR/CI/review monitoring | Timed loop | PR merged, CI green, no open actionable comments, or user cancels | `gh`, CI logs, review thread state | Longer intervals or event trigger when possible |
-| Periodic digest/report | Timed loop or automation | Report delivered for each period | Source links, timestamps, deduped items | Match cadence to source update rate |
-| External event response | Event loop | Each event classified, handled, and acknowledged | Connector/API state and response record | Filter events before invoking large model |
-| Large migration/audit/research | Workflow loop | Queue empty plus review pass complete | Independent reviewer or sampled runtime checks | Batch work, cap agents, summarize intermediate state |
+| 快速的一次性代码或内容任务 | 单轮循环 | 智能体证明任务已完成，或请求补充上下文 | 针对性测试、文件检查、截图、引用 | 使用明确提示和最小必要上下文 |
+| 具有可衡量完成标准的复杂任务 | 目标循环 | 验收标准通过，或达到最大轮次或时长 | 对话中可见的证据，包括测试输出、构建退出状态、指标、检查清单 | 明确最大尝试次数和一个可衡量目标 |
+| PR、CI 或审查监控 | 定时循环 | PR 已合并、CI 通过、没有未处理的有效评论，或用户取消 | `gh`、CI 日志、审查线程状态 | 尽可能延长检查间隔或改用事件触发 |
+| 周期性摘要或报告 | 定时循环或自动化 | 每个周期的报告均已交付 | 来源链接、时间戳、去重后的条目 | 根据来源更新频率设置执行周期 |
+| 外部事件响应 | 事件循环 | 每个事件均已分类、处理并确认 | 连接器或 API 状态及响应记录 | 调用大模型前先过滤事件 |
+| 大型迁移、审计或研究 | 工作流循环 | 队列已清空且审查已通过 | 独立审查或抽样运行时检查 | 分批处理、限制智能体数量、总结中间状态 |
 
-## Loop Spec Template
+## 循环规格模板
 
 ```text
-Objective:
-Trigger:
-Inputs and context:
-Stop condition:
-Verification evidence:
-Budget limits:
-State to preserve:
-Fallback if verification fails:
-Terminal states:
+目标：
+触发条件：
+输入与上下文：
+停止条件：
+验证证据：
+预算限制：
+需要保留的状态：
+验证失败时的后备方案：
+终止状态：
 ```
 
-## Good Stop Conditions
+## 良好的停止条件
 
-- `npm test` exits 0 and no source files outside `src/auth` changed.
-- Lighthouse performance/accessibility/best-practices/SEO scores are all >= 90, or stop after 5 attempts.
-- Every open PR review thread has a response or code change, CI is green, and the branch is pushed.
-- The issue queue label `needs-triage` is empty, and each processed issue has exactly one owner/status label.
+- `npm test` 的退出码为 0，且 `src/auth` 之外的源文件均未发生变化。
+- Lighthouse 的性能、无障碍、最佳实践和 SEO 分数均不低于 90；否则在尝试 5 次后停止。
+- 每个未关闭的 PR 审查线程都已有回复或对应代码变更，CI 已通过，且分支已推送。
+- Issue 队列中的 `needs-triage` 标签已清空，且每个已处理的 Issue 都恰好有一个负责人标签和一个状态标签。
 
-## Poor Stop Conditions
+## 不良的停止条件
 
-- "Make it better."
-- "Until it feels done."
-- "Fix everything."
-- "Keep going as long as possible."
+- “把它做得更好。”
+- “直到感觉完成为止。”
+- “修复所有问题。”
+- “尽可能一直做下去。”
 
-Rewrite poor conditions into measurable checks before starting the loop.
+开始循环前，将不良条件改写成可衡量的检查项。
 
-## Review Prompt Pattern
+## 审查提示词模板
 
-Use a fresh reviewer when risk is high:
+风险较高时，使用新的审查者：
 
 ```text
-Review the current artifact/change against the stated stop condition.
-Focus on bugs, missing verification, regressions, and places where the loop could stop too early.
-Do not rewrite the solution unless a defect requires it.
-Return findings ordered by severity with file/line or evidence references.
+根据已声明的停止条件审查当前产物或变更。
+重点检查缺陷、缺失的验证、回归问题，以及循环可能过早停止的位置。
+除非修复缺陷确有必要，否则不要重写解决方案。
+按严重程度排序返回问题，并附上文件与行号或证据引用。
 ```

@@ -1,4 +1,4 @@
 interface:
-  display_name: "AI Loop Orchestrator"
-  short_description: "Design goal loops and verification workflows"
-  default_prompt: "Use $ai-loop-orchestrator to turn this objective into a bounded agent loop with verification and stop conditions."
+  display_name: "AI 循环编排器"
+  short_description: "设计目标循环与验证工作流"
+  default_prompt: "使用 $ai-loop-orchestrator 将此目标转成具有验证方式和停止条件的有边界智能体循环。"
