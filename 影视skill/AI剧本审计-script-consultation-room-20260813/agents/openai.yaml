@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI 剧本会诊室"
+  short_description: "多专家审查长短剧本、裁决争议、保护亮点并复审改稿版本"
+  default_prompt: "使用 $script-consultation-room 对这份剧本进行全面会诊，先诊断并等我确认后再改写。"
+policy:
+  allow_implicit_invocation: true

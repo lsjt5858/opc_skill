@@ -1,0 +1,2 @@
+# validate_consultation.py 使用的 Draft 2020-12 JSON Schema 校验器。
+jsonschema>=4.18,<5

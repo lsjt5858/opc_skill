@@ -1,0 +1,69 @@
+{
+  "role": "剧本总监",
+  "mode": "FOCUSED",
+  "input_dispute": {
+    "dispute_id": "D-101",
+    "question": "如何修复赵警官精准知道账本位置的信息权限问题，同时保留“专业刑警用可复核证据击中嫌疑人”的创作锁？",
+    "options": [
+      {
+        "option_id": "A",
+        "proposal": "在码头质问前增加赵警官查看已截获快递柜取件码与沈舟手机定位重合的短节拍。",
+        "anchor": "赵警官：你昨晚把真账本藏在七码头第三个储物柜。",
+        "evidence": "现稿中赵警官精准知道账本位置却没有交代信息来源；新增的已截获快递柜取件码与沈舟手机定位重合，提供了可复核证据。",
+        "evidence_type": "TEXT",
+        "benefit": "保留赵警官的精准揭示，同时补足其信息来源。",
+        "fix_cost": "S",
+        "material_production_cost": "低（手机与取件码的插入特写）",
+        "risk": "可能过早暴露警方掌握信息的程度。"
+      },
+      {
+        "option_id": "B",
+        "proposal": "把台词改为试探性诈问：“七码头的柜子，够你藏真账本吗？”",
+        "anchor": "赵警官：你昨晚把真账本藏在七码头第三个储物柜。",
+        "evidence": "现稿中赵警官精准知道账本位置却没有交代信息来源；新增的已截获快递柜取件码与沈舟手机定位重合，提供了可复核证据。",
+        "evidence_type": "TEXT",
+        "benefit": "无需新增证据节拍，仍可利用诈问促使沈舟失态。",
+        "fix_cost": "S",
+        "material_production_cost": "低（仅调整台词）",
+        "risk": "赵警官从确认事实变成猜测，削弱其专业性与反转公平性。"
+      }
+    ]
+  },
+  "creative_lock": [
+    "赵警官专业。",
+    "信息来自可复核证据，不靠巧合或超自然。",
+    "沈舟在码头被精准击中后失态。"
+  ],
+  "user_goal": "赵警官的精准揭示必须形成公平反转并迫使沈舟失态。",
+  "production_constraints": [
+    "最多新增一个短节拍。",
+    "不新增场景或角色。"
+  ],
+  "decision": {
+    "dispute_id": "D-101",
+    "selected_option": "A",
+    "recommendation": "选择 Option A：在码头质问前增加赵警官查看已截获快递柜取件码与沈舟手机定位重合的短节拍。该节拍只呈现证据对应关系，不提前揭示账本结论，再由精准质问完成反转。",
+    "decision_basis": {
+      "story_goal": "A 保留赵警官对账本位置的确定性揭示，使台词仍能作为公平反转直接击中沈舟并迫使其失态；B 的诈问只能以猜测诱发反应，削弱目标中的“精准揭示”。",
+      "audience_information": "A 在质问前向观众提供取件码与手机定位重合这一可核验信息，使观众知道赵警官的判断有来源，同时把账本位置的完整结论留到质问时揭示。",
+      "causal_fairness": "A 建立“截获取件码—定位重合—锁定储物柜—精准质问”的可追溯因果链，修复现稿的信息权限缺口；B 规避了权限缺口，却没有为赵警官知道事实建立证据链。",
+      "emotional_effect": "A 先短暂蓄积证据压力，再用确定性台词击穿沈舟的伪装，能让失态成为被证据逼出的情绪结果；B 的试探口吻会分散这一击的确定感。",
+      "creative_lock": "A 同时保留赵警官的专业判断、可复核证据来源和码头上的精准击中，不依赖巧合或超自然；B 把专业确认降为猜测，不满足该创作锁。",
+      "material_production_cost": "A 仅新增一个手机与取件码插入特写的短节拍，物料成本低，不新增场景或角色，符合全部制作约束；相较 B 的纯台词调整只增加极小成本，但换回关键的因果公平与专业性。"
+    },
+    "rejected_options": [
+      {
+        "option_id": "B",
+        "reason": "B 虽然无需新增证据节拍且物料成本低，但把赵警官从依据证据确认事实改成试探猜测，无法建立观众可复核的完整因果链，也削弱精准反转、专业刑警形象和沈舟被确证击中后的失态，因此不选。"
+      }
+    ]
+  },
+  "self_check": {
+    "no_new_diagnosis": true,
+    "user_status_unchanged": true,
+    "no_vote": true,
+    "selected_from_submitted_options": true,
+    "rejected_all_unselected_options": true,
+    "no_rewrite_authorization": true
+  }
+}

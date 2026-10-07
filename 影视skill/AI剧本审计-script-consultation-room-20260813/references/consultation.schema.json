@@ -1,0 +1,490 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.codex/skills/script-consultation-room/consultation.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "consultation_id",
+    "script",
+    "mode",
+    "profile",
+    "canonical_map",
+    "creative_lock",
+    "health",
+    "emotional_curve",
+    "issues",
+    "dependencies",
+    "disputes",
+    "decisions",
+    "roadmap",
+    "regression"
+  ],
+  "$defs": {
+    "issueStatus": {
+      "enum": [
+        "detected",
+        "verified",
+        "disputed",
+        "accepted",
+        "rejected",
+        "deferred",
+        "fixed",
+        "partially_fixed",
+        "regressed",
+        "closed"
+      ]
+    },
+    "disputeOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "option_id",
+        "proposal",
+        "anchor",
+        "evidence",
+        "evidence_type",
+        "benefit",
+        "fix_cost",
+        "material_production_cost",
+        "risk"
+      ],
+      "properties": {
+        "option_id": {"enum": ["A", "B", "C"]},
+        "proposal": {"type": "string", "minLength": 1},
+        "anchor": {"type": "string", "minLength": 1},
+        "evidence": {"type": "string", "minLength": 1},
+        "evidence_type": {"enum": ["TEXT", "INFERENCE", "UNKNOWN"]},
+        "benefit": {"type": "string", "minLength": 1},
+        "fix_cost": {"enum": ["S", "M", "L", "XL"]},
+        "material_production_cost": {"type": "string", "minLength": 1},
+        "risk": {"type": "string", "minLength": 1}
+      }
+    }
+  },
+  "properties": {
+    "consultation_id": {
+      "type": "string",
+      "pattern": "^C[0-9]{3,}$"
+    },
+    "script": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script_id", "script_version", "source_hash"],
+      "properties": {
+        "script_id": {"type": "string", "minLength": 1},
+        "script_version": {
+          "type": "string",
+          "pattern": "^v[0-9]{3,}$"
+        },
+        "parent_version": {
+          "type": ["string", "null"]
+        },
+        "source_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "mode": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_mode", "depth", "experts"],
+      "properties": {
+        "user_mode": {
+          "enum": ["COMPREHENSIVE", "FOCUSED", "REVISION_REVIEW"]
+        },
+        "depth": {
+          "enum": ["LIGHT", "STANDARD", "DEEP"]
+        },
+        "experts": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "profile": {"type": "object"},
+    "canonical_map": {"type": "object"},
+    "creative_lock": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "string", "minLength": 1}
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimensions", "overall_score", "overall_reason"],
+      "properties": {
+        "dimensions": {
+          "type": "array",
+          "minItems": 7,
+          "maxItems": 7,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "applicability",
+              "score",
+              "weight",
+              "evidence",
+              "linked_issue_ids",
+              "linked_strengths"
+            ],
+            "properties": {
+              "name": {
+                "enum": [
+                  "structure",
+                  "character",
+                  "rhythm",
+                  "emotion",
+                  "visual_storytelling",
+                  "audience_propulsion",
+                  "producibility"
+                ]
+              },
+              "applicability": {"enum": ["APPLICABLE", "N_A"]},
+              "score": {"type": ["number", "null"], "minimum": 0, "maximum": 10},
+              "weight": {"type": ["integer", "null"], "minimum": 5, "maximum": 35},
+              "evidence": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string", "minLength": 1}
+              },
+              "linked_issue_ids": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}
+              },
+              "linked_strengths": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        },
+        "overall_score": {"type": ["number", "null"], "minimum": 0, "maximum": 10},
+        "overall_reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "emotional_curve": {"type": "array"},
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issue_id",
+          "priority",
+          "category",
+          "status",
+          "location",
+          "anchor",
+          "evidence",
+          "evidence_type",
+          "problem",
+          "impact",
+          "root_cause",
+          "recommendation",
+          "expected_effect",
+          "risk",
+          "scope",
+          "fix_cost",
+          "confidence",
+          "confidence_reason",
+          "status_history"
+        ],
+        "properties": {
+          "issue_id": {
+            "type": "string",
+            "pattern": "^(NEW-)?SC-[0-9]{3,}$"
+          },
+          "priority": {
+            "enum": ["P0", "P1", "P2", "P3"]
+          },
+          "category": {"type": "string", "minLength": 1},
+          "status": {
+            "$ref": "#/$defs/issueStatus"
+          },
+          "location": {"type": "string", "minLength": 1},
+          "anchor": {"type": "string", "minLength": 1},
+          "evidence": {"type": "string", "minLength": 1},
+          "evidence_type": {
+            "enum": ["TEXT", "INFERENCE", "UNKNOWN"]
+          },
+          "problem": {"type": "string", "minLength": 1},
+          "impact": {"type": "string", "minLength": 1},
+          "root_cause": {"type": "string", "minLength": 1},
+          "recommendation": {"type": "string", "minLength": 1},
+          "expected_effect": {"type": "string", "minLength": 1},
+          "risk": {"type": "string", "minLength": 1},
+          "scope": {
+            "enum": ["LINE", "BEAT", "SCENE", "EPISODE", "ARC", "GLOBAL"]
+          },
+          "fix_cost": {
+            "enum": ["S", "M", "L", "XL"]
+          },
+          "confidence": {
+            "enum": ["high", "medium", "low"]
+          },
+          "confidence_reason": {"type": "string", "minLength": 1},
+          "parent_issue": {
+            "type": ["string", "null"]
+          },
+          "status_history": {
+            "type": "array",
+            "minItems": 1,
+            "items": {"type": "string"}
+          }
+        }
+      }
+    },
+    "dependencies": {"type": "array"},
+    "disputes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dispute_id", "question", "options"],
+        "properties": {
+          "dispute_id": {
+            "type": "string",
+            "pattern": "^D-[0-9]{3,}$"
+          },
+          "question": {"type": "string", "minLength": 1},
+          "options": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
+            "items": {"$ref": "#/$defs/disputeOption"}
+          }
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "dispute_id",
+          "selected_option",
+          "recommendation",
+          "decision_basis",
+          "rejected_options"
+        ],
+        "properties": {
+          "dispute_id": {
+            "type": "string",
+            "pattern": "^D-[0-9]{3,}$"
+          },
+          "selected_option": {"enum": ["A", "B", "C"]},
+          "recommendation": {"type": "string", "minLength": 1},
+          "decision_basis": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "story_goal",
+              "audience_information",
+              "causal_fairness",
+              "emotional_effect",
+              "creative_lock",
+              "material_production_cost"
+            ],
+            "properties": {
+              "story_goal": {"type": "string", "minLength": 1},
+              "audience_information": {"type": "string", "minLength": 1},
+              "causal_fairness": {"type": "string", "minLength": 1},
+              "emotional_effect": {"type": "string", "minLength": 1},
+              "creative_lock": {"type": "string", "minLength": 1},
+              "material_production_cost": {"type": "string", "minLength": 1}
+            }
+          },
+          "rejected_options": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["option_id", "reason"],
+              "properties": {
+                "option_id": {"enum": ["A", "B", "C"]},
+                "reason": {"type": "string", "minLength": 1}
+              }
+            }
+          }
+        }
+      }
+    },
+    "roadmap": {"type": "array"},
+    "regression": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "prior_consultation",
+        "required_issue_ids",
+        "checked_issue_ids",
+        "issue_results",
+        "creative_lock_checks",
+        "escalated_dispute_ids",
+        "final_result"
+      ],
+      "properties": {
+        "prior_consultation": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "consultation_id",
+                "script_version",
+                "source_hash",
+                "required_issues",
+                "creative_lock"
+              ],
+              "properties": {
+                "consultation_id": {
+                  "type": "string",
+                  "pattern": "^C[0-9]{3,}$"
+                },
+                "script_version": {
+                  "type": "string",
+                  "pattern": "^v[0-9]{3,}$"
+                },
+                "source_hash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "required_issues": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["issue_id", "priority", "status"],
+                    "properties": {
+                      "issue_id": {
+                        "type": "string",
+                        "pattern": "^SC-[0-9]{3,}$"
+                      },
+                      "priority": {"enum": ["P0", "P1", "P2", "P3"]},
+                      "status": {
+                        "enum": [
+                          "accepted",
+                          "fixed",
+                          "partially_fixed",
+                          "regressed",
+                          "closed"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "creative_lock": {
+                  "type": "object",
+                  "minProperties": 1,
+                  "additionalProperties": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          ]
+        },
+        "required_issue_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "checked_issue_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "issue_results": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "issue_id",
+              "observation",
+              "prior_status",
+              "status_after",
+              "accepted_decision",
+              "reviewed_locations",
+              "changed_locations",
+              "comparison_evidence",
+              "change_evidence",
+              "verification_evidence",
+              "linked_new_issue_id"
+            ],
+            "properties": {
+              "issue_id": {"type": "string", "minLength": 1},
+              "observation": {
+                "enum": ["FIXED", "PARTIALLY_FIXED", "UNFIXED", "REGRESSED"]
+              },
+              "prior_status": {"$ref": "#/$defs/issueStatus"},
+              "status_after": {"$ref": "#/$defs/issueStatus"},
+              "accepted_decision": {"type": "string", "minLength": 1},
+              "reviewed_locations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {"type": "string", "minLength": 1}
+              },
+              "changed_locations": {
+                "type": "array",
+                "items": {"type": "string", "minLength": 1}
+              },
+              "comparison_evidence": {"type": "string", "minLength": 1},
+              "change_evidence": {"type": ["string", "null"]},
+              "verification_evidence": {"type": ["string", "null"]},
+              "linked_new_issue_id": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "creative_lock_checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "lock_item",
+              "outcome",
+              "evidence",
+              "approval_reference",
+              "old_value",
+              "new_value",
+              "effective_version"
+            ],
+            "properties": {
+              "lock_item": {"type": "string", "minLength": 1},
+              "outcome": {
+                "enum": ["PRESERVED", "APPROVED_CHANGE", "VIOLATED"]
+              },
+              "evidence": {"type": "string", "minLength": 1},
+              "approval_reference": {"type": ["string", "null"]},
+              "old_value": {"type": ["string", "null"]},
+              "new_value": {"type": ["string", "null"]},
+              "effective_version": {"type": ["string", "null"]}
+            }
+          }
+        },
+        "escalated_dispute_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "final_result": {
+          "enum": [
+            "PASS",
+            "FOCUSED_REVIEW_REQUIRED",
+            "REVISION_REQUIRED",
+            null
+          ]
+        }
+      }
+    }
+  }
+}

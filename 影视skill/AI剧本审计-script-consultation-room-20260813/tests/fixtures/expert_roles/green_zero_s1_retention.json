@@ -1,0 +1,94 @@
+{
+  "role": "留存与信息策略师",
+  "mode": "FOCUSED",
+  "reserved_issue_ids": {
+    "range": "SC-601..SC-649",
+    "start": "SC-601",
+    "end": "SC-649",
+    "used": []
+  },
+  "issue_candidates": [],
+  "protected_strength_candidates": [
+    {
+      "strength_id": "PS-RETENTION-S1-01",
+      "label": "具体物件立即建立开场承诺",
+      "location": "临时场景 S1·节拍 B1",
+      "anchor": "林妍盯着离婚协议",
+      "evidence": "原文开场直接呈现林妍注视“离婚协议”这一可定位物件，没有先用背景说明替代当前信息。",
+      "evidence_type": "TEXT",
+      "active_viewer_question": "林妍将如何处理离婚协议，她与丈夫的婚姻将发生什么变化？",
+      "information_change": "观众从无场景信息进入一个与婚姻去留直接相关的待决状态。",
+      "expected_update": "下一步期待被限定为林妍会公开、签署、隐藏或以其他方式处理协议，而非泛化地等待事件发生。",
+      "dramatic_function": "用明确物件建立本段需要推进的具体信息承诺。",
+      "protection_note": "后续调整应保留“离婚协议”在开场的可识别性及其待处理状态，不宜改成泛泛的婚姻不和说明。"
+    },
+    {
+      "strength_id": "PS-RETENTION-S1-02",
+      "label": "藏起协议形成可追踪的信息差",
+      "location": "临时场景 S1·节拍 B2-B3",
+      "anchor": "门外传来钥匙声。她把协议压进茶几抽屉，起身迎向刚进门的丈夫。",
+      "evidence": "原文先给出丈夫即将进门的声音信息，再写林妍把协议压进抽屉并主动迎向丈夫；观众知道协议存在及藏放位置，丈夫在已提供文本中尚未获知。",
+      "evidence_type": "TEXT",
+      "active_viewer_question": "林妍为何暂时不让丈夫看见协议，丈夫是否会察觉或发现？",
+      "information_change": "问题从“她会如何处理协议”升级为“她选择隐藏后能否维持这一信息差”。",
+      "expected_update": "丈夫到场不只是新增人物，而是让协议从私人待决物件变成可能暴露的秘密。",
+      "dramatic_function": "以可见动作建立观众与丈夫之间的信息差，并把开场承诺推进到即时互动。",
+      "protection_note": "后续调整应保留钥匙声触发藏协议的先后关系，以及观众知情、丈夫暂不知情的状态。"
+    },
+    {
+      "strength_id": "PS-RETENTION-S1-03",
+      "label": "丈夫问句更新暴露预期",
+      "location": "临时场景 S1·节拍 B4",
+      "anchor": "丈夫：今天怎么这么安静？",
+      "evidence": "丈夫进门后的首句直接指出林妍当下的异常状态，说明他已注意到可感知的变化，但原文没有写他已经发现离婚协议。",
+      "evidence_type": "TEXT",
+      "active_viewer_question": "丈夫的察觉会不会逼迫林妍回应，并进一步接近被藏起的协议？",
+      "information_change": "丈夫由完全未反应更新为已经察觉异常，同时协议是否暴露仍保持未决。",
+      "expected_update": "下一节拍被明确导向林妍如何回答、回避或暴露更多信息，而不是重复当前沉默。",
+      "dramatic_function": "在不直接揭开协议的情况下升级信息压力，使活跃问题继续前移。",
+      "protection_note": "后续调整应保留丈夫只察觉异常、尚未确认协议的层级，避免一句话提前消耗全部信息差。"
+    }
+  ],
+  "uncertainty_note": {
+    "precise_question": "上述活跃问题在后续节拍中是否获得新的信息增量并在适当位置兑现，以及该开场的实际留存表现如何？",
+    "checked_source_scope": "已检查用户提供的场景一全部原文：林妍注视离婚协议、钥匙声、藏协议、迎向丈夫及丈夫询问安静原因。",
+    "checked_evidence": "现有四个节拍依次建立离婚协议、丈夫将到、林妍隐藏和丈夫察觉异常，供应范围内未出现可据文本确认的信息停滞、重复更新、理解断裂或承诺漂移。",
+    "evidence_type": "UNKNOWN",
+    "missing_materials_or_constraints": [
+      "后续场景或节拍文本",
+      "可靠时间码或成片",
+      "受众测试、留存曲线或其他平台数据"
+    ],
+    "bounded_conclusion": "无法判断承诺与兑现的后续距离、未来是否持续升级，也不能断言实际滑走率、观众阈值或平台表现；不得将未提供的未来文本视为未兑现问题。",
+    "next_step": "补充后续文本后继续按“进入时问题—新增信息—预期变化—下一问题”逐节拍核验；如需判断实际留存，再使用可靠时间码和真实数据验证。"
+  },
+  "handoff_observations": [],
+  "self_check": {
+    "root_fields_exact": true,
+    "root_field_names": [
+      "role",
+      "mode",
+      "reserved_issue_ids",
+      "issue_candidates",
+      "protected_strength_candidates",
+      "uncertainty_note",
+      "handoff_observations",
+      "self_check"
+    ],
+    "mode_is_focused": true,
+    "reserved_range_matches_assignment": true,
+    "issue_count": 0,
+    "issue_ids_used": [],
+    "issue_schema_check": "not_applicable_no_issue_candidates",
+    "zero_issue_is_evidence_based": true,
+    "protected_strength_count": 3,
+    "all_strengths_have_location_anchor_evidence_and_function": true,
+    "active_viewer_questions_are_text_traceable": true,
+    "future_non_delivery_was_not_treated_as_an_issue": true,
+    "unsupported_seconds_or_rates_used": false,
+    "actual_audience_behavior_claimed": false,
+    "platform_or_commercial_conclusion_made": false,
+    "handoff_required": false,
+    "role_boundary_respected": true
+  }
+}
